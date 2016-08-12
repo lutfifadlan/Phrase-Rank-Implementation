@@ -13,13 +13,14 @@ namespace InformationRetrieval
         {
             double sigmaPowTFIDF;
             double normalizeFactor = 0;
-            for (int i = 1; i <= cd.getNTuple(); i++)
+            //for (int i = 1; i <= cd.getNTuple(); i++)
+            foreach(KeyValuePair<int, string>kvp in cd.getWordDictStemmed())
             {
                 sigmaPowTFIDF = 0;
-                foreach (KeyValuePair<string, double> kvp in cd.getTFIDFperDocument()[i])
-                    sigmaPowTFIDF += Math.Pow(kvp.Value, 2);
+                foreach (KeyValuePair<string, double> vp in cd.getTFIDFperDocument()[kvp.Key])
+                    sigmaPowTFIDF += Math.Pow(vp.Value, 2);
                 normalizeFactor = Math.Sqrt(sigmaPowTFIDF);
-                cd.getNormalizeFactorDocument().Add(i, normalizeFactor);
+                cd.getNormalizeFactorDocument().Add(kvp.Key, normalizeFactor);
             }
             using (StreamWriter stw = new StreamWriter(@"C:\Users\Mochamad Lutfi F\Documents\Visual Studio 2015\Projects\ConsoleApplication11\output\Document\NormalizeFactorDocument.txt"))
             {

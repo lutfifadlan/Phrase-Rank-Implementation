@@ -63,7 +63,7 @@ namespace InformationRetrieval
         }
         public void RemoveStopWordDocumentDictionary(CollectionDocument cd)
         {
-            int index = 1;
+            //int index = 1;
             foreach (KeyValuePair<int, string> kvp in cd.getWordDictionary().Skip(1).ToList())
             {
                 string stoppedWord = removeStopWords(kvp.Value);

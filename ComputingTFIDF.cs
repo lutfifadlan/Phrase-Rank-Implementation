@@ -14,22 +14,24 @@ namespace InformationRetrieval
             // term yang sama pada dokumen yang berbeda belum tentu memiliki TF yang sama
             cd.TFIDFperDocument = new Dictionary<string, double>[cd.getNTuple() + 1];
             cd.TFIDFperDocument[0] = null;
-            for (int i = 1; i <= cd.getNTuple(); i++)
+            //for (int i = 1; i <= cd.getNTuple(); i++)
+            foreach(KeyValuePair<int,string>kvp in cd.getWordDictStemmed())
             {
-                cd.TFIDFperDocument[i] = new Dictionary<string, double>();
-                foreach (KeyValuePair<string, int> kvp in cd.getNoDocTermTF()[i])
+                cd.TFIDFperDocument[kvp.Key] = new Dictionary<string, double>();
+                foreach (KeyValuePair<string, int> vp in cd.getNoDocTermTF()[kvp.Key])
                 {
-                    cd.TFIDFperDocument[i].Add(kvp.Key, (kvp.Value * cd.getIDF()[kvp.Key]));
+                    cd.TFIDFperDocument[kvp.Key].Add(vp.Key, (vp.Value * cd.getIDF()[vp.Key]));
                 }
             }
 
             using (StreamWriter stw = new StreamWriter(@"C:\Users\Mochamad Lutfi F\Documents\Visual Studio 2015\Projects\ConsoleApplication11\output\Document\TFIDFperDocument.txt"))
             {
-                for (int i = 1; i <= cd.getNTuple(); i++)
+                //for (int i = 1; i <= cd.getNTuple(); i++)
+                foreach(KeyValuePair<int,string[]>kvp in cd.getTermDocID())
                 {
-                    stw.WriteLine("Dokumen {0}", i);
-                    foreach (KeyValuePair<string, double> kvp in cd.getTFIDFperDocument()[i])
-                        stw.WriteLine("[TFIDF term {0} = {1}]", kvp.Key, kvp.Value);
+                    stw.WriteLine("Dokumen {0}", kvp.Key);
+                    foreach (KeyValuePair<string, double> vp in cd.getTFIDFperDocument()[kvp.Key])
+                        stw.WriteLine("[TFIDF term {0} = {1}]", vp.Key, vp.Value);
                 }
             }
         }

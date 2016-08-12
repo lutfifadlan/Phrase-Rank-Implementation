@@ -9,19 +9,21 @@ namespace InformationRetrieval
 {
     class RelevanceJudgement
     {
-        public void InputRelevanceJudgement(CollectionDocument cq)
+        public void InputRelevanceJudgement(CollectionDocument cq, string fileName)
         {
+            string[] relevanceJudgement = File.ReadAllLines(fileName);
             //string relevanceJudgment = File.ReadAllText(@"C:\Users\Mochamad Lutfi F\Documents\Visual Studio 2015\Projects\ConsoleApplication11\qrels.text");
             //string[] relevanceJudgment = File.ReadAllLines(@"C:\Users\Mochamad Lutfi F\Documents\Visual Studio 2015\Projects\ConsoleApplication11\qrels.text");
             //string[] relevanceJudgment = File.ReadAllLines(@"C:\Users\Mochamad Lutfi F\Documents\Visual Studio 2015\Projects\ConsoleApplication11\test collection\CACM\QRELSAAH");
             //string[] relevanceJudgment = File.ReadAllLines(@"C:\Users\Mochamad Lutfi F\Documents\Visual Studio 2015\Projects\ConsoleApplication11\CISI\qrels.text");
-            string[] relevanceJudgment = File.ReadAllLines(@"C:\Users\Mochamad Lutfi F\Documents\Visual Studio 2015\Projects\ConsoleApplication11\test collection\CRAN\QRELSADE");
+            //string[] relevanceJudgment = File.ReadAllLines(@"C:\Users\Mochamad Lutfi F\Documents\Visual Studio 2015\Projects\ConsoleApplication11\test collection\CRAN\QRELSADE");
             //string[] relevanceJudgment = File.ReadAllLines(@"C:\Users\Mochamad Lutfi F\Documents\Visual Studio 2015\Projects\ConsoleApplication11\test collection\MED\QRELSABT");
             //string[] relevanceJudgment = File.ReadAllLines(@"C:\Users\Mochamad Lutfi F\Documents\Visual Studio 2015\Projects\ConsoleApplication11\test collection\NPL\QRELSACA");
             string[] rlj;
             List<string[]> listRlj = new List<string[]>();
-            foreach (string s in relevanceJudgment)
+            foreach (string s in relevanceJudgement)
             {
+                rlj = new string[2];
                 rlj = s.Split((char[])null, StringSplitOptions.RemoveEmptyEntries);
                 //Console.WriteLine(rlj[0]);
                 //Console.WriteLine(rlj[1]);
@@ -36,8 +38,8 @@ namespace InformationRetrieval
             
             //string[] rlv = relevanceJudgment.Split((char[])null, StringSplitOptions.RemoveEmptyEntries);
             //string[] rlvArray = rlv.Where(str => str != "0.000000" && str != "0").ToArray();
-            int j = 1;
-            int r = 0;
+            //int j = 1;
+            //int r = 0;
             for(int i=0; i < listRlj.Count; i++)
             {
                 if (!cq.getRld().ContainsKey(Int32.Parse(listRlj[i][0])))

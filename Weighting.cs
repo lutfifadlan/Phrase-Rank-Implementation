@@ -50,11 +50,12 @@ namespace InformationRetrieval
 
             using (StreamWriter stw = new StreamWriter(@"C:\Users\Mochamad Lutfi F\Documents\Visual Studio 2015\Projects\ConsoleApplication11\output\Document\TermFrequencyDocument.txt"))
             {
-                for (int i = 1; i <= cd.getNTuple(); i++)
+                //for (int i = 1; i <= cd.getNTuple(); i++)
+                foreach(KeyValuePair<int,string>kvp in cd.getWordDictStemmed())
                 {
-                    stw.WriteLine("Dokumen {0}", i);
-                    foreach (KeyValuePair<string, int> kvp in cd.getNoDocTermTF()[i])
-                        stw.WriteLine("[{0} | {1}]", kvp.Key, kvp.Value);
+                    stw.WriteLine("Dokumen {0}", kvp.Key);
+                    foreach (KeyValuePair<string, int> vp in cd.getNoDocTermTF()[kvp.Key])
+                        stw.WriteLine("[{0} | {1}]", vp.Key, vp.Value);
                 }
             }
 
@@ -131,6 +132,8 @@ namespace InformationRetrieval
             foreach (KeyValuePair<string, int> kvp in cd.getTermFrequencyQuery())
                 cd.getLogarithmicTFQuery().Add(kvp.Key, (1 + Math.Log10(kvp.Value)));
 
+        
+
             //IDF Query
             foreach (KeyValuePair<string, List<int>> kvp in cd.getStructuredQueryIndex())
             {
@@ -144,9 +147,13 @@ namespace InformationRetrieval
                 cd.getDfQuery().Add(kvp.Key, temp.Count());
             }
 
-            int N = cd.getNTuple();
+            //int N = cd.getNTuple();
+            //int N = //cd.getTermDocID().Count;
+            int N = cd.getTermQueryID().Count;
+            //int N = cdd.getTermDocID().Count;
             foreach (KeyValuePair<string, List<int>> kvp in cd.getStructuredQueryIndex())
             {
+                //Console.WriteLine("cd.getDfQuery()[kvp.Key] = {0}", cd.getDfQuery()[kvp.Key]);
                 double temp = Math.Log10((double)N / (double)cd.getDfQuery()[kvp.Key]);
                 if (!Double.IsNaN(temp))
                     cd.getIDFQuery().Add(kvp.Key, temp);
@@ -218,11 +225,46 @@ namespace InformationRetrieval
             cq.getWeightQuery().Clear();
             foreach (string termQuery in cq.getTermQueryID()[noQuery])
             {
+                //Console.WriteLine("cq.getTFIDFperQueryNormalized()[noQuery][termQuery] = {0}", cq.getTFIDFperQueryNormalized()[noQuery][termQuery]);
                 cq.listTFIDFQ.Add(cq.getTFIDFperQueryNormalized()[noQuery][termQuery]);
-                if (!cq.getWeightQuery().ContainsKey(termQuery))
-                    cq.getWeightQuery().Add(termQuery, cq.getTFIDFperQueryNormalized()[noQuery][termQuery]);
+               // if (!cq.getWeightQuery().ContainsKey(termQuery))
+                 //   cq.getWeightQuery().Add(termQuery, cq.getTFIDFperQueryNormalized()[noQuery][termQuery]);
             }
-            cq.setWeightListQuery(cq.getListTFIDFQ().Sum());
+            //cq.setWeightListQuery(cq.getListTFIDFQ().Sum());
+            //cq.getWeightQueryDict().Add(noQuery, cq.getListTFIDFQ().Sum());
+            if (!cq.getDictListTFIDFQ().ContainsKey(noQuery))
+                cq.getDictListTFIDFQ().Add(noQuery, new List<double>());
+            foreach (double i in cq.getListTFIDFQ())
+                cq.getDictListTFIDFQ()[noQuery].Add(i);
+        }
+        public void MakeWeightQueryToListAfterPhRank(CollectionDocument cq, int noQuery)
+        {
+            cq.getListTFIDFQ().Clear();
+            cq.getWeightQuery().Clear();
+            foreach (string termQuery in cq.getTermQueryReformulatedID()[noQuery])//cq.getTermQueryID()[noQuery])
+            {
+                cq.listTFIDFQ.Add(cq.getTFIDFperQueryNormalized()[noQuery][termQuery]);
+                // if (!cq.getWeightQuery().ContainsKey(termQuery))
+                //   cq.getWeightQuery().Add(termQuery, cq.getTFIDFperQueryNormalized()[noQuery][termQuery]);
+            }
+            //cq.setWeightListQuery(cq.getListTFIDFQ().Sum());
+            //cq.getWeightQueryDict().Add(noQuery, cq.getListTFIDFQ().Sum());
+            if (!cq.getDictListTFIDFQ().ContainsKey(noQuery))
+                cq.getDictListTFIDFQ().Add(noQuery, new List<double>());
+            foreach (double i in cq.getListTFIDFQ())
+                cq.getDictListTFIDFQ()[noQuery].Add(i);
+        }
+        public void MakeNewWeightQueryToList(CollectionDocument cq, int noQuery)
+        {
+            cq.getListTFIDFQ().Clear();
+            cq.getWeightQuery().Clear();
+            foreach (string termQuery in cq.getTermQueryID()[noQuery])
+            {
+                cq.listTFIDFQ.Add(cq.TFIDFperQueryNormalizedRochio[noQuery][termQuery]);
+               // if (!cq.getWeightQuery().ContainsKey(termQuery))
+                 //   cq.getWeightQuery().Add(termQuery, cq.TFIDFperQueryNormalizedRochio[noQuery][termQuery]);
+            }
+            //cq.setWeightListQuery(cq.getListTFIDFQ().Sum());
         }
     }
 }

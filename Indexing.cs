@@ -17,14 +17,15 @@ namespace InformationRetrieval
             {
                 string word = kvp.Value;
                 string[] arrayWord = word.Split(new string[] { " ", "\n", "\t" }, StringSplitOptions.RemoveEmptyEntries);
-                cd.getTermDocID().Add(indexDoc, arrayWord);
-                indexDoc++;
+                cd.getTermDocID().Add(kvp.Key, arrayWord);//indexDoc, arrayWord);
+                //indexDoc++;
             }
 
             index = 1;
-            for (int i = 1; i <= cd.getTermDocID().Count; i++)
+            //for (int i = 1; i <= cd.getTermDocID().Count; i++)
+            foreach(KeyValuePair<int, string> kvp in cd.getWordDictStemmed())
             {
-                foreach (string s in cd.getTermDocID()[i])
+                foreach (string s in cd.getTermDocID()[kvp.Key])
                 {
                     cd.getTerm().Add(index, s);
                     index++;
@@ -32,16 +33,17 @@ namespace InformationRetrieval
             }
             cd.setSortedTerm((from kv in cd.getTerm() orderby kv.Value select kv).ToList());
 
-            for (int i = 1; i <= cd.getTermDocID().Count; i++)
+            //for (int i = 1; i <= cd.getTermDocID().Count; i++)
+            foreach(KeyValuePair<int, string>kvp in cd.getWordDictStemmed())
             {
-                for (int j = 0; j < cd.getTermDocID()[i].Length; j++)
+                for (int j = 0; j < cd.getTermDocID()[kvp.Key].Length; j++)
                 {
-                    if (cd.getTermDocID().ContainsKey(i))
+                    if (cd.getTermDocID().ContainsKey(kvp.Key))
                     {
-                        if (!cd.getWordDocNumber().ContainsKey(cd.getTermDocID()[i].ElementAt(j)))
-                            cd.getWordDocNumber().Add(cd.getTermDocID()[i].ElementAt(j), new List<int>());
+                        if (!cd.getWordDocNumber().ContainsKey(cd.getTermDocID()[kvp.Key].ElementAt(j)))
+                            cd.getWordDocNumber().Add(cd.getTermDocID()[kvp.Key].ElementAt(j), new List<int>());
                         //      if(!wordDocNumber[cd.getTermDocID()[i].ElementAt(j)].Contains(i))
-                        cd.getWordDocNumber()[cd.getTermDocID()[i].ElementAt(j)].Add(i);
+                        cd.getWordDocNumber()[cd.getTermDocID()[kvp.Key].ElementAt(j)].Add(kvp.Key);
                     }
                 }
             }

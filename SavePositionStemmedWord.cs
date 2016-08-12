@@ -11,23 +11,25 @@ namespace InformationRetrieval
         public void CreatePositionDocument(CollectionDocument cd)
         {
             string[] arrStemmedWord;
+            //Console.WriteLine("cd.getNTuple() = {0}", cd.getNTuple());
             cd.stemmedWordPositionDocument = new Dictionary<string, List<int>>[cd.getNTuple() + 1];
             cd.stemmedWordPositionDocument[0] = null;
-            for(int i=1; i<=cd.getNTuple(); i++)
+            //for(int i=1; i<=cd.getNTuple(); i++)
+            foreach(KeyValuePair<int, string>kvp in cd.getWordDictStemmed())
             {
-                cd.stemmedWordPositionDocument[i] = new Dictionary<string, List<int>>();
-                arrStemmedWord = cd.getTermDocID()[i];
+                cd.stemmedWordPositionDocument[kvp.Key] = new Dictionary<string, List<int>>();
+                arrStemmedWord = cd.getTermDocID()[kvp.Key];
                 List<int> listPosition = new List<int>();
                 int j = 0;
                 foreach(string word in arrStemmedWord)
                 {
-                    if (!cd.stemmedWordPositionDocument[i].ContainsKey(word))
-                        cd.stemmedWordPositionDocument[i].Add(word, new List<int>());
-                    cd.stemmedWordPositionDocument[i][word].Add(j);
+                    if (!cd.stemmedWordPositionDocument[kvp.Key].ContainsKey(word))
+                        cd.stemmedWordPositionDocument[kvp.Key].Add(word, new List<int>());
+                    cd.stemmedWordPositionDocument[kvp.Key][word].Add(j);
                     listPosition.Add(j);
                     j++;
                 }
-                cd.getSizeWindowDocument().Add(i, listPosition.Count);
+                cd.getSizeWindowDocument().Add(kvp.Key, listPosition.Count);
             }
         }
         public void CreatePositionQuery(CollectionDocument cq)

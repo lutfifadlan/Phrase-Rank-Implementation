@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.IO; 
 
 namespace InformationRetrieval
 {
@@ -11,7 +12,7 @@ namespace InformationRetrieval
         public void StemmingDocument(CollectionDocument cd)
         {
             StemmingTool stemmer = new StemmingTool();
-            int index = 1;
+            //int index = 1;
             //int a = 10875;
             //Console.WriteLine(a);
             //   stemmedWordPosition = new Dictionary<string, List<int>>[cd.getNTuple() + 1];
@@ -49,6 +50,28 @@ namespace InformationRetrieval
             {
                 string word = cd.getQueryDictStopped()[kvp.Key];
                 cd.getQueryStemmed().Add(kvp.Key, stemmer.Stemming(word));
+            }
+        }
+        public void WriteOutputStemmingDocument (CollectionDocument cd)
+        {
+            using (StreamWriter sw = new StreamWriter(@"C: \Users\Mochamad Lutfi F\Documents\Visual Studio 2015\Projects\ConsoleApplication11\output\Document\Output Stemming Document.txt"))
+            {
+                foreach (KeyValuePair<int, string> kvp in cd.getWordDictStemmed())
+                {
+                    sw.WriteLine("Nomor Dokumen = {0}", kvp.Key);
+                    sw.WriteLine("[{0} | {1}]", kvp.Key, kvp.Value);
+                }
+            }
+        }
+        public void WriteOutputStemmingQuery (CollectionDocument cq)
+        {
+            using (StreamWriter sw = new StreamWriter(@"C: \Users\Mochamad Lutfi F\Documents\Visual Studio 2015\Projects\ConsoleApplication11\output\Query\Output Stemming Query.txt"))
+            {
+                foreach (KeyValuePair<int, string> kvp in cq.getQueryStemmed())
+                {
+                    sw.WriteLine("Nomor Query = {0}", kvp.Key);
+                    sw.WriteLine("[{0} | {1}]", kvp.Key, kvp.Value);
+                }
             }
         }
         /*

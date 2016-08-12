@@ -5,6 +5,8 @@ using System.Text;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Collections;
+//using System.Windows;
+using System.Windows.Forms;
 
 namespace InformationRetrieval
 {
@@ -40,7 +42,8 @@ namespace InformationRetrieval
         private SortedDictionary<int, string> termQuery = new SortedDictionary<int, string>(); // list term pada query
         private SortedDictionary<int, string[]> termDocID = new SortedDictionary<int, string[]>(); // list kumpulan term tiap dokumen
         private SortedDictionary<int, string[]> termQueryID = new SortedDictionary<int, string[]>(); // list kumpulan term tiap query
-        private SortedDictionary<int, string[]> termQueryIDAfterRanked = new SortedDictionary<int, string[]>();
+        private SortedDictionary<int, string[]> termQueryReformulatedID = new SortedDictionary<int, string[]>();
+        //private SortedDictionary<int, string[]> termQueryIDAfterRanked = new SortedDictionary<int, string[]>();
         private SortedDictionary<string, List<int>> wordDocNumber = new SortedDictionary<string, List<int>>(); // list term tiap dokumen beserta list dokumen yang memiliki term tersebut
         private SortedDictionary<string,List<int>> queryDocNumber = new SortedDictionary<string, List<int>>(); // list term tiap query beserta list query yang memiliki term tersebut
         private List<KeyValuePair<int, string>> sortedTerm = new List<KeyValuePair<int, string>>(); //  list term pada dokumen yang telah diurut sesuai abjad
@@ -67,9 +70,12 @@ namespace InformationRetrieval
         private List<int> matchedDocument = new List<int>();
         private Dictionary<int, double> documentScore = new Dictionary<int, double>();
         private Dictionary<string, double> weightQuery = new Dictionary<string, double>();
+        private Dictionary<int, double> weightQueryDict = new Dictionary<int, double>();
         private double weightListQuery = 0;
         private Dictionary<int, double> documentRelevantScore = new Dictionary<int, double>();
+        private Dictionary<int, double> sigmaDocumentRelevantScorePerQuery = new Dictionary<int, double>();
         private Dictionary<int, double> documentNonRelevantScore = new Dictionary<int, double>();
+        private Dictionary<int, double> sigmaDocumentNonRelevantScorePerQuery = new Dictionary<int, double>();
         private List<KeyValuePair<int, double>> rankedDocumentScore = new List<KeyValuePair<int, double>>();
         private List<KeyValuePair<int, double>> rankedDocumentNonRelevantScore = new List<KeyValuePair<int, double>>();
         private List<KeyValuePair<int, double>> rankedDocumentRelevantScore = new List<KeyValuePair<int, double>>();
@@ -78,11 +84,16 @@ namespace InformationRetrieval
         private List<int> docFound = new List<int>(); // list seluruh dokumen yang ditemukan (termasuk yang tidak relevan)
         private Dictionary<string, List<int>> listQueryDocFound = new Dictionary<string, List<int>>(); // list term query beserta no. dokumen yang telah ditemukan yang mengandung term tersebut
         private Dictionary<int, List<int>> listNoQueryDocFound = new Dictionary<int, List<int>>(); //list no.query beserta no.dokumen yang telah ditemukan pada query tersebut
+        private Dictionary<int, List<int>> listNoQueryDocRelFound = new Dictionary<int, List<int>>();
+        private Dictionary<int, List<int>> listNoQueryDocNonRelFound = new Dictionary<int, List<int>>();
         private List<int> docRelFound = new List<int>(); // list seluruh dokumen relevan yang ditemukan
         private List<int> docNonRelFound = new List<int>();
         private List<int> rankedDocRelFound = new List<int>(); // list seluruh dokumen relevan yang ditemukan yang telah di-ranking
         private List<int> rankedDocNonRelFound = new List<int>();
         private List<int> rankedDocFound = new List<int>(); // list seluruh dokumen yang ditemukan yang telah di-ranking
+        private Dictionary<int, List<int>> dictRankedDocFound = new Dictionary<int, List<int>>();
+        private Dictionary<int, List<int>> dictRankedDocRelFound = new Dictionary<int, List<int>>();
+        private Dictionary<int, List<int>> dictRankedDocNonRelFound = new Dictionary<int, List<int>>();
         private Dictionary<int, double> recallDict = new Dictionary<int, double>();
         private Dictionary<int, double> precisionDict = new Dictionary<int, double>();
         private double recallRetrieval = 0;
@@ -93,6 +104,7 @@ namespace InformationRetrieval
         private double nonInterpolatedAveragePrecision = 0;
         private Dictionary<int, double> docRelevantPrecision = new Dictionary<int, double>();
         private Dictionary<int, List<int>> listPseudoRelDoc = new Dictionary<int, List<int>>();
+        private Dictionary<int, List<double>> dictListTFIDFQ = new Dictionary<int, List<double>>();
         private List<int> listPseudoRelDocWithoutQ = new List<int>();
         private int currentKey = 0;
         private int nTuple = 0;
@@ -105,6 +117,7 @@ namespace InformationRetrieval
         public Dictionary<string, double>[] TFIDFperDocumentNormalized;
         public Dictionary<string, double>[] TFIDFperQuery;
         public Dictionary<string, double>[] TFIDFperQueryNormalized;
+        public Dictionary<string, double>[] TFIDFperQueryNormalizedRochio;
         public List<double> listTFIDFQ = new List<double>();
         // GETTER
         public Dictionary<int, string> getWordDictionary() { return word; }
@@ -118,6 +131,7 @@ namespace InformationRetrieval
         public SortedDictionary<int, string> getTermQuery() { return termQuery; }
         public SortedDictionary<int, string[]> getTermDocID() { return termDocID; }
         public SortedDictionary<int, string[]> getTermQueryID() { return termQueryID; }
+        public SortedDictionary<int, string[]> getTermQueryReformulatedID() { return termQueryReformulatedID; }
         public SortedDictionary<string, List<int>> getWordDocNumber() { return wordDocNumber; }
         public SortedDictionary<string, List<int>> getQueryDocNumber() { return queryDocNumber; }
         public List<KeyValuePair<int, string>> getSortedTerm() { return sortedTerm; }
@@ -150,9 +164,13 @@ namespace InformationRetrieval
         public List<int> getMatchedDocument() { return matchedDocument; }
         public Dictionary<int, double> getDocumentScore() { return documentScore; }
         public Dictionary<string, double> getWeightQuery() { return weightQuery; }
+        public Dictionary<int, double> getWeightQueryDict() { return weightQueryDict; }
         public List<double> getListTFIDFQ() { return listTFIDFQ; }
+        public Dictionary<int, List<double>> getDictListTFIDFQ() { return dictListTFIDFQ; }
         public Dictionary<int, double> getDocumentRelevantScore() { return documentRelevantScore; }
+        public Dictionary<int, double> getSigmaDocumentRelevantScorePerQuery() { return sigmaDocumentRelevantScorePerQuery; }
         public Dictionary<int, double> getDocumentNonRelevantScore() { return documentRelevantScore; }
+        public Dictionary<int, double> getSigmaDocumentNonRelevantScorePerQuery() { return sigmaDocumentNonRelevantScorePerQuery; }
         public List<KeyValuePair<int, double>> getRankedDocumentScore() { return rankedDocumentScore; }
         public List<KeyValuePair<int, double>> getRankedDocumentRelevantScore() { return rankedDocumentRelevantScore; }
         public List<KeyValuePair<int, double>> getRankedDocumentNonRelevantScore() { return rankedDocumentNonRelevantScore; }
@@ -163,9 +181,14 @@ namespace InformationRetrieval
         public List<int> getDocFound() { return docFound; }
         public Dictionary<string, List<int>> getListQueryDocFound() { return listQueryDocFound; }
         public Dictionary<int, List<int>> getListNoQueryDocFound() { return listNoQueryDocFound; }
+        public Dictionary<int, List<int>> getListNoQueryDocRelFound() { return listNoQueryDocRelFound; }
+        public Dictionary<int, List<int>> getListNoQueryDocNonRelFound() { return listNoQueryDocNonRelFound; }
         public List<int> getRankedDocFound() { return rankedDocFound; }
         public List<int> getRankedDocRelFound() { return rankedDocRelFound; }
         public List<int> getRankedDocNonRelFound() { return rankedDocNonRelFound; }
+        public Dictionary <int, List<int>> getDictRankedDocFound() { return dictRankedDocFound; }
+        public Dictionary<int, List<int>> getDictRankedDocRelFound() { return dictRankedDocRelFound; }
+        public Dictionary<int, List<int>> getDictRankedDocNonRelFound() { return dictRankedDocNonRelFound; }
         public Dictionary<int, double> getRecallDict() { return recallDict; }
         public Dictionary<int, double> getPrecisionDict() { return precisionDict; }
         public Dictionary<double, List<double>> getRecallPrecision() { return recallPrecision; }
@@ -225,8 +248,15 @@ namespace InformationRetrieval
 {
     class MainProgram
     {
+        [STAThread]
         static void Main(string[] args)
         {
+            Application.Run(new InformationRetrievalSystem());
+            //InformationRetrievalSystem form = new InformationRetrievalSystem();
+            //Form1 Form = new Form1();
+            //Form.Show();
+            //Form.Close();
+            /*
             CollectionDocument collDoc = new CollectionDocument();
             CollectionDocument collQuery = new CollectionDocument();
             CollectionDocument collReformulatedQuery = new CollectionDocument();
@@ -254,7 +284,7 @@ namespace InformationRetrieval
             List<double> allNonInterpolatedAveragePrecision = new List<double>();
             collDoc.setWord(0, null);
             collQuery.setWord(0, null);
-            saveColl.SaveDocumentCollection(collDoc); // Menyimpan koleksi dokumen
+            //saveColl.SaveDocumentCollection(collDoc); // Menyimpan koleksi dokumen
             saveColl.SaveQueryCollection(collQuery); // Menyimpan kumpulan query
             removeStop.RemoveStopWordDocumentDictionary(collDoc);
             removeStop.RemoveStopWordQueryDictionary(collQuery);
@@ -278,9 +308,10 @@ namespace InformationRetrieval
             invertedFile.MakeInvertedFileIndexDocument(collDoc);
             invertedFile.MakeInvertedFileIndexQuery(collQuery);
             invertedFile.MakeInvertedFileIndexDocumentNormalized(collDoc);
-            invertedFile.MakeInvertedFileIndexQueryNormalized(collQuery);
+            invertedFile.MakeInvertedFileIndexQueryNormalized(collQuery);*/
 
             //for (int i = 1; i<=collQuery.getNTuple(); i++)
+            /*
             foreach(KeyValuePair<int, string[]>kvp in collQuery.getTermQueryID())
             {
                 Console.WriteLine("Query = {0}", kvp.Key);
@@ -307,15 +338,14 @@ namespace InformationRetrieval
             allInterpolatedAveragePrecision.Clear();
             allNonInterpolatedAveragePrecision.Clear();
             collQuery.getListNoQueryDocFound().Clear();
-
+            */
             // Pseudo Relevance Feedback
             //for (int i = 1; i <= collQuery.getNTuple(); i++)
+            /*
             foreach (KeyValuePair<int, string[]> kvp in collQuery.getTermQueryID())
             {
                 Console.WriteLine("Query = {0}", kvp.Key);
                 retrieval.Retrieval(collDoc, collQuery, kvp.Key);
-                /*foreach (int j in collQuery.getDocRelFound())
-                    Console.WriteLine("Dokumen = {0}", j);*/
                 //relFeedBack.FeedbackRelevantDocument(collQuery, i);
                 //relFeedBack.PseudoRelevantDocument(collQuery);
                 relFeedBack.RochioQuery(collQuery);
@@ -355,14 +385,15 @@ namespace InformationRetrieval
             //phRank.PrintDocRel(collQuery);
             isAdj.isWordAdjacent(collDoc, collQuery);
 
-
+            */
             //Phrase Rank
+            /*
             List<int> listNoQuery = new List<int>();
             foreach (KeyValuePair<int, string[]> pair in collQuery.getTermQueryID())
                 listNoQuery.Add(pair.Key);
 
             Console.WriteLine("PhRank algorithm");
-            //for (int i = 1; i <= collQuery.getNTuple()/*collQuery.getNTuple()*/; i++)
+            //for (int i = 1; i <= collQuery.getNTuple(); i++)
             //foreach(KeyValuePair<int, string[]> kvp in collQuery.getTermQueryID()) -> di ubah pas phase rank
             foreach(int i in listNoQuery)
             {
@@ -391,7 +422,7 @@ namespace InformationRetrieval
             Console.WriteLine("Average Precision Query Collection = {0}", (double)allPrecisionRetrieval.Sum() / (double)collQuery.getNTuple());
             Console.WriteLine("Average Interpolated Average Precision Query Collection = {0}", (double)allInterpolatedAveragePrecision.Sum() / (double)collQuery.getNTuple());
             Console.WriteLine("Average Non Interpolated Average Precision Query Collection = {0}", (double)allNonInterpolatedAveragePrecision.Sum() / (double)collQuery.getNTuple());
-            
+            */
             //Close Main
         }
     }            

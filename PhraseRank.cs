@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.IO;
 
 namespace InformationRetrieval
 {
@@ -105,23 +106,115 @@ namespace InformationRetrieval
         // N = pseudo relevan document + query
         // cij = count of stem co-occurrence in windows (size 2 and 10) in N
         AddingQueryToN addQtoN = new AddingQueryToN();
-        public void PhRankAlgorithm(CollectionDocument cd, CollectionDocument cq, int noQuery)
+        public void PhRankAlgorithmSF(CollectionDocument cd, CollectionDocument cq, int noQuery)
         {
             addQtoN.AddQueryToN(cd, cq, noQuery);
             //PrintDocRel(cq,noQuery);
             MakeUniqueStemmedWord(cq, cd, noQuery);
-            CreateAffinityGraph(cd, cq, noQuery);
+            WriteUniqueStemmedWord(noQuery);
+            CreateAffinityGraphSF(cd, cq, noQuery);
             //PrintProbabilityMatrix();
            // PrintAffinityGraph(cq, noQuery);
             RankingTerm(cd,cq, noQuery);
+            WriteRankedCandidateTermScore(noQuery);
+            PrintChoosenTerm(noQuery);
+            WriteChoosenTerm(noQuery);
+            Clearing(cd, cq, noQuery);
+        }
+        public void PhRankAlgorithmRF(CollectionDocument cd, CollectionDocument cq, int noQuery)
+        {
+            addQtoN.AddQueryToN(cd, cq, noQuery);
+            MakeUniqueStemmedWord(cq, cd, noQuery);
+            WriteUniqueStemmedWord(noQuery);
+            CreateAffinityGraphRF(cd, cq, noQuery);
+            RankingTerm(cd, cq, noQuery);
+            WriteRankedCandidateTermScore(noQuery);
+            PrintChoosenTerm(noQuery);
+            WriteChoosenTerm(noQuery);
+            Clearing(cd, cq, noQuery);
+        }
+        public void PhRankAlgorithmZF(CollectionDocument cd, CollectionDocument cq, int noQuery)
+        {
+            addQtoN.AddQueryToN(cd, cq, noQuery);
+            MakeUniqueStemmedWord(cq, cd, noQuery);
+            WriteUniqueStemmedWord(noQuery);
+            CreateAffinityGraph(cd, cq, noQuery);
+            RankingTermZF(cd, cq, noQuery);
+            WriteRankedCandidateTermScore(noQuery);
+            PrintChoosenTerm(noQuery);
+            WriteChoosenTerm(noQuery);
+            Clearing(cd, cq, noQuery);
+        }
+        public void PhRankAlgoritmSRZT(CollectionDocument cd, CollectionDocument cq, int noQuery)
+        {
+            addQtoN.AddQueryToN(cd, cq, noQuery);
+            MakeUniqueStemmedWord(cq, cd, noQuery);
+            WriteUniqueStemmedWord(noQuery);
+            CreateAffinityGraph(cd, cq, noQuery);
+            RankingTerm(cd, cq, noQuery);
+            WriteRankedCandidateTermScore(noQuery);
+            PrintChoosenTerm(noQuery);
+            WriteChoosenTerm(noQuery);
+            Clearing(cd, cq, noQuery);
+        }
+        public void PhRankAlgorithmSF6Term(CollectionDocument cd, CollectionDocument cq, int noQuery)
+        {
+            addQtoN.AddQueryToN(cd, cq, noQuery);
+            //PrintDocRel(cq,noQuery);
+            MakeUniqueStemmedWord(cq, cd, noQuery);
+            WriteUniqueStemmedWord(noQuery);
+            CreateAffinityGraphSF6Term(cd, cq, noQuery);
+            //PrintProbabilityMatrix();
+            // PrintAffinityGraph(cq, noQuery);
+            RankingTerm(cd, cq, noQuery);
+            WriteRankedCandidateTermScore(noQuery);
+            PrintChoosenTerm(noQuery);
+            WriteChoosenTerm(noQuery);
+            Clearing(cd, cq, noQuery);
+        }
+        public void PhRankAlgorithmRF6Term(CollectionDocument cd, CollectionDocument cq, int noQuery)
+        {
+            addQtoN.AddQueryToN(cd, cq, noQuery);
+            MakeUniqueStemmedWord(cq, cd, noQuery);
+            WriteUniqueStemmedWord(noQuery);
+            CreateAffinityGraphRF6Term(cd, cq, noQuery);
+            RankingTerm(cd, cq, noQuery);
+            WriteRankedCandidateTermScore(noQuery);
+            WriteChoosenTerm(noQuery);
             PrintChoosenTerm(noQuery);
             Clearing(cd, cq, noQuery);
         }
-        public void CreateAffinityGraph(CollectionDocument cd, CollectionDocument cq, int noQuery)
+        public void PhRankAlgorithmZF6Term(CollectionDocument cd, CollectionDocument cq, int noQuery)
+        {
+            addQtoN.AddQueryToN(cd, cq, noQuery);
+            MakeUniqueStemmedWord(cq, cd, noQuery);
+            WriteUniqueStemmedWord(noQuery);
+            CreateAffinityGraph(cd, cq, noQuery);
+            RankingTermZF(cd, cq, noQuery);
+            WriteRankedCandidateTermScore(noQuery);
+            PrintChoosenTerm(noQuery);
+            WriteChoosenTerm(noQuery);
+            Clearing(cd, cq, noQuery);
+        }
+        public void PhRankAlgoritmSRZT6Term(CollectionDocument cd, CollectionDocument cq, int noQuery)
+        {
+            addQtoN.AddQueryToN(cd, cq, noQuery);
+            MakeUniqueStemmedWord(cq, cd, noQuery);
+            WriteUniqueStemmedWord(noQuery);
+            CreateAffinityGraph6Term(cd, cq, noQuery);
+            RankingTerm(cd, cq, noQuery);
+            WriteRankedCandidateTermScore(noQuery);
+            PrintChoosenTerm(noQuery);
+            WriteChoosenTerm(noQuery);
+            Clearing(cd, cq, noQuery);
+        }
+        public void CreateAffinityGraphSF(CollectionDocument cd, CollectionDocument cq, int noQuery)
         {
             CreateVertexGraph();
             //Console.WriteLine("a");
             CreateEdgeGraphAndWeightingEdge(cd, cq, noQuery);
+            WriteProbabilityMatrix(noQuery);
+            WriteWeightEdge(noQuery);
             //Console.WriteLine("b");
             MakeEdgeStemUnique(); // Delete edge with same node
             //Console.WriteLine("c");
@@ -129,11 +222,81 @@ namespace InformationRetrieval
             //Console.WriteLine("d");
             RandomWalk();
             //Console.WriteLine("e");
+            WriteRankedAffinityScoreDictionary(noQuery);
             MakeCandidateTerm();
+            WriteCandidateTerm(noQuery);
             //Console.WriteLine("f");
             //PrintAffinityScore();
             //WeightingVertex(cd, cq, noQuery);
             //Console.WriteLine("g");
+        }
+        public void CreateAffinityGraphSF6Term(CollectionDocument cd, CollectionDocument cq, int noQuery)
+        {
+            CreateVertexGraph();
+            CreateEdgeGraphAndWeightingEdge(cd, cq, noQuery);
+            WriteProbabilityMatrix(noQuery);
+            WriteWeightEdge(noQuery);
+            MakeEdgeStemUnique(); // Delete edge with same node
+            RandomWalk();
+            WriteRankedAffinityScoreDictionary(noQuery);
+            Make6CandidateTerm();
+            WriteCandidateTerm(noQuery);
+        }
+        public void CreateAffinityGraphRF(CollectionDocument cd, CollectionDocument cq, int noQuery)
+        {
+            CreateVertexGraph();
+            WeightingVertex(cd, cq, noQuery);
+            WriteWeightVertex(noQuery);
+            CreateEdgeGraphAndWeightingEdgeRF(cd, cq, noQuery);
+            WriteProbabilityMatrix(noQuery);
+            WriteWeightEdge(noQuery);
+            MakeEdgeStemUnique(); // Delete edge with same node
+            MakeWeightVertexAsAffinityScore();
+            WriteRankedAffinityScoreDictionary(noQuery);
+            MakeCandidateTerm();
+            WriteCandidateTerm(noQuery);
+        }
+        public void CreateAffinityGraphRF6Term(CollectionDocument cd, CollectionDocument cq, int noQuery)
+        {
+            CreateVertexGraph();
+            WeightingVertex(cd, cq, noQuery);
+            WriteWeightVertex(noQuery);
+            CreateEdgeGraphAndWeightingEdgeRF(cd, cq, noQuery);
+            WriteProbabilityMatrix(noQuery);
+            WriteWeightEdge(noQuery);
+            MakeEdgeStemUnique(); // Delete edge with same node
+            MakeWeightVertexAsAffinityScore();
+            WriteRankedAffinityScoreDictionary(noQuery);
+            Make6CandidateTerm();
+            WriteCandidateTerm(noQuery);
+        }
+        public void CreateAffinityGraph(CollectionDocument cd, CollectionDocument cq, int noQuery)
+        {
+            CreateVertexGraph();
+            WeightingVertex(cd, cq, noQuery);
+            WriteWeightVertex(noQuery);
+            CreateEdgeGraphAndWeightingEdge(cd, cq, noQuery);
+            WriteProbabilityMatrix(noQuery);
+            WriteWeightEdge(noQuery);
+            MakeEdgeStemUnique(); // Delete edge with same node
+            MakeWeightVertexAsAffinityScore();
+            WriteRankedAffinityScoreDictionary(noQuery);
+            MakeCandidateTerm();
+            WriteCandidateTerm(noQuery);
+        }
+        public void CreateAffinityGraph6Term(CollectionDocument cd, CollectionDocument cq, int noQuery)
+        {
+            CreateVertexGraph();
+            WeightingVertex(cd, cq, noQuery);
+            WriteWeightVertex(noQuery);
+            CreateEdgeGraphAndWeightingEdge(cd, cq, noQuery);
+            WriteProbabilityMatrix(noQuery);
+            WriteWeightEdge(noQuery);
+            MakeEdgeStemUnique(); // Delete edge with same node
+            MakeWeightVertexAsAffinityScore();
+            WriteRankedAffinityScoreDictionary(noQuery);
+            Make6CandidateTerm();
+            WriteCandidateTerm(noQuery);
         }
         public void RankingTerm(CollectionDocument cd, CollectionDocument cq, int noQuery)
         {
@@ -154,16 +317,63 @@ namespace InformationRetrieval
                 choosenTerm = rankedCandidateTermScore.First();
                 //PrintChoosenTerm(noQuery);
                 // add reformulated query to new collection query
-                cq.getTermQueryID().Remove(noQuery);
+                //cq.getTermQueryID().Remove(noQuery);
                 //Console.WriteLine("r");
-                cq.getTermQueryID().Add(noQuery, choosenTerm.Key);
+                //cq.getTermQueryID().Add(noQuery, choosenTerm.Key);
+                //cq.getTermQueryID()[noQuery] = choosenTerm.Key;
+                cq.getTermQueryReformulatedID().Add(noQuery, choosenTerm.Key);
             }
             else
             {
-                Console.WriteLine("asup dieu");
+                //Console.WriteLine("asup dieu");
                 choosenTerm = new KeyValuePair<string[], double>();
             }
             //Console.WriteLine("add");
+        }
+        public void RankingTermZF(CollectionDocument cd, CollectionDocument cq, int noQuery)
+        {
+
+            for (int i = 0; i < listCandidateTerm.Count; i++)
+            {
+                //f(x,Q) =(rank) z(x) * sigma(w(n) dari x)phi(w(n)) / n
+                //termWt = termWt * ComputeFactorZ(cd, T);
+                double termWt = ComputeScoreTermQuery(listCandidateTerm[i]);
+                //termWt = termWt * ComputeFactorZ(cd, listCandidateTerm[i]);
+                listScoreCandidateTerm.Add(termWt);
+                candidateTermScore.Add(listCandidateTerm[i], termWt);
+            }
+            //PrintRankedCandidateTerm();
+            rankedCandidateTermScore = (from pair in candidateTermScore orderby pair.Value descending select pair).ToList();
+            if (rankedCandidateTermScore.Count > 0)
+            {
+                choosenTerm = rankedCandidateTermScore.First();
+                //PrintChoosenTerm(noQuery);
+                // add reformulated query to new collection query
+                //cq.getTermQueryID().Remove(noQuery);
+                //Console.WriteLine("r");
+                //cq.getTermQueryID().Add(noQuery, choosenTerm.Key);
+                //cq.getTermQueryID()[noQuery] = choosenTerm.Key;
+                cq.getTermQueryReformulatedID().Add(noQuery, choosenTerm.Key);
+            }
+            else
+            {
+               // Console.WriteLine("asup dieu");
+                choosenTerm = new KeyValuePair<string[], double>();
+            }
+            //Console.WriteLine("add");
+        }
+        public void WriteRankedCandidateTermScore(int noQuery)
+        {
+            using (StreamWriter sw = File.AppendText(@"C: \Users\Mochamad Lutfi F\Documents\Visual Studio 2015\Projects\ConsoleApplication11\output\Query\Ranked Candidate Term Score.txt"))
+            {
+                sw.WriteLine("Nomor Query = {0}", noQuery);
+                foreach (KeyValuePair<string[], double> kvp in rankedCandidateTermScore)
+                {
+                    for (int i = 0; i < kvp.Key.Length; i++)
+                        sw.Write("{0} ", kvp.Key[i]);
+                    sw.WriteLine("| Candidate Term Score = {0}", kvp.Value);
+                }
+            }
         }
         public void MakeUniqueStemmedWord(CollectionDocument cq, CollectionDocument cd, int noQuery)
         {
@@ -175,6 +385,7 @@ namespace InformationRetrieval
             {
                 //Console.WriteLine(i);
                 stemmedWord = cd.getTermDocID()[i].Distinct().ToArray();
+                //Console.WriteLine("stemmedWord = {0}", stemmedWord);
                 if(!stemmedWordDocRelDict.ContainsKey(i))
                     stemmedWordDocRelDict.Add(i, stemmedWord);
             }
@@ -195,11 +406,31 @@ namespace InformationRetrieval
                 }
             }
         }
+        public void WriteUniqueStemmedWord(int noQuery)
+        {
+            using (StreamWriter sw = File.AppendText(@"C: \Users\Mochamad Lutfi F\Documents\Visual Studio 2015\Projects\ConsoleApplication11\output\Query\Unique Stemmed Word.txt"))
+            {
+                List<string> temp = new List<string>(uniqueStemmedWord);
+                temp.Sort();
+                sw.WriteLine("No Query = {0}", noQuery);
+                sw.WriteLine("Kata unik yang sudah di-stem:");
+                for(int i = 0; i < temp.Count; i++)
+                {
+                    sw.Write("{0}", temp[i]);
+                    if (i < temp.Count - 1)
+                        sw.Write(", ");
+                }
+                sw.WriteLine();
+            }
+        }
         public int ComputeNUniqueStemmedWordinDoc(CollectionDocument cd)
         {
-            for(int i = 1; i < cd.getNTuple(); i++)
+            //for(int i = 1; i <= cd.getNTuple(); i++)
+            //foreach(KeyValuePair<int,string[]>kvp in cd.getTermDocID())
+            foreach(KeyValuePair<int, string>kvp in cd.getWordDictStemmed())
             {
-                string s = cd.getWordDictStemmed()[i];
+                string s = kvp.Value;//cd.getWordDictStemmed()[kvp.Key];
+                //Console.WriteLine("s = {0}",s);
                 string[] arrayWord = s.Split(new string[] { " ", "\n", "\t" }, StringSplitOptions.RemoveEmptyEntries);
                 string[] uniqueStemWordDocument = arrayWord.Distinct().ToArray();
                 foreach (string es in uniqueStemWordDocument)
@@ -301,6 +532,77 @@ namespace InformationRetrieval
                                 edgeStem.setNoStem2(k);
                                 edgeStem.setNode2(stem[k]);
                                 double w = WeightingEdge(cd, cq, edgeStem, edgeStem.getNode1().getData(), edgeStem.getNode2().getData(), noQuery);
+                                edgeStem.setWeight(w);
+                                listEdgeStem.Add(edgeStem);
+                                probabilityMatrix[m, k] = w;
+                                probabilityMatrix[k, m] = w;
+                            }
+                        }
+                        //edgeStem.getWeight();
+                        //probabilityMatrix[k, m] = w;
+                        //Console.WriteLine("probabilityMatrix[{0}, {1}] = {2}", m, k, probabilityMatrix[m, k]);
+                        /*
+                        for (int indStem = 0; indStem < stem.Length; indStem++)
+                        {
+                            if (stem[indStem].getData() == tempS1)
+                            {
+                                edgeStem.setNoStem1(indStem);
+                                edgeStem.setNode1(stem[indStem]);
+                            }
+                            if (stem[indStem].getData() == tempS2)
+                            {
+                                edgeStem.setNoStem2(indStem);
+                                edgeStem.setNode2(stem[indStem]);
+                            }
+                            if (edgeStem.getNode1() != null && edgeStem.getNode2() != null)
+                            {
+                                if (!listEdgeStem.Contains(edgeStem))
+                                {
+                                    double w = WeightingEdge(cd, cq, edgeStem, edgeStem.getNode1().getData(), edgeStem.getNode2().getData(), noQuery);
+                                    edgeStem.setWeight(w);
+                                    listEdgeStem.Add(edgeStem);
+                                    probabilityMatrix[m, k] = edgeStem.getWeight();
+                                    Console.WriteLine("probabilityMatrix[{0}, {1}] = {2}", m, k, probabilityMatrix[m, k]);
+                                }
+                            }
+                        }*/
+
+                    }
+                }
+            }
+        }
+        public void CreateEdgeGraphAndWeightingEdgeRF(CollectionDocument cd, CollectionDocument cq, int noQuery)
+        {
+            probabilityMatrix = new double[uniqueStemmedWord.Count, uniqueStemmedWord.Count];
+            //Console.WriteLine("jumlah pseudo doc rel = {0}", cq.getListPseudoRelDoc()[noQuery].Count);
+            foreach (int j in cq.getListPseudoRelDoc()[noQuery])
+            {
+                //Console.WriteLine("Dokumen Relevan = {0}", j);
+                for (int m = 0; m < uniqueStemmedWord.Count; m++)
+                {
+                    string tempS1 = uniqueStemmedWord[m];
+                    for (int k = 0; k < uniqueStemmedWord.Count; k++)
+                    {
+                        if (m == k)
+                            probabilityMatrix[m, k] = 0;
+                        else
+                        {
+                            string tempS2 = uniqueStemmedWord[k];
+                            //Console.WriteLine("tempS1 = {0}", tempS1);
+                            //Console.WriteLine("tempS2 = {0}", tempS2);
+                            Adjacent adj = new Adjacent();
+                            adj.setW1(tempS1);
+                            adj.setW2(tempS2);
+                            adj.setIsAdjacent(true);
+                            if (cd.listAdjacentDictionary[noQuery][j].Contains(adj))
+                            {
+                                //Console.WriteLine("asup");
+                                edgeStem = new Edge<string>();
+                                edgeStem.setNoStem1(m);
+                                edgeStem.setNode1(stem[m]);
+                                edgeStem.setNoStem2(k);
+                                edgeStem.setNode2(stem[k]);
+                                double w = WeightingEdgeRF(cd, cq, edgeStem, edgeStem.getNode1().getData(), edgeStem.getNode2().getData(), noQuery);
                                 edgeStem.setWeight(w);
                                 listEdgeStem.Add(edgeStem);
                                 probabilityMatrix[m, k] = w;
@@ -443,7 +745,8 @@ namespace InformationRetrieval
         }
         public int CountWordOccurenceIn4Window(CollectionDocument cd, string[] word)
         {
-            for (int i=1; i <= cd.getNTuple(); i++)
+            //for (int i=1; i <= cd.getNTuple(); i++)
+            foreach(KeyValuePair<int, string[]>kvp in cd.getTermDocID())//cd.getWordDictStemmed())//cd.getTermDocID())
             {
                 stemCoOccur4inD = 0;
                 //int sizeUw4,sizeWindow;
@@ -453,7 +756,7 @@ namespace InformationRetrieval
                 int j = 0;
                 if (word.Length == 1)
                 {
-                    foreach (string s in cd.getTermDocID()[i])
+                    foreach (string s in kvp.Value)//cd.getTermDocID()[kvp.Key])//i])
                     {
                         if (j % 4 == 0)
                         {
@@ -468,7 +771,7 @@ namespace InformationRetrieval
                 }
                 else if (word.Length == 2)
                 {
-                    foreach (string s in cd.getTermDocID()[i])
+                    foreach (string s in kvp.Value)//cd.getTermDocID()[kvp.Key])//[i])
                     {
                         if (j % 8 == 0)
                         {
@@ -483,7 +786,7 @@ namespace InformationRetrieval
                 }
                 else if (word.Length == 3)
                 {
-                    foreach (string s in cd.getTermDocID()[i])
+                    foreach (string s in kvp.Value)//cd.getTermDocID()[kvp.Key])//[i])
                     {
                         if (j % 12 == 0)
                         {
@@ -706,6 +1009,16 @@ namespace InformationRetrieval
             }
            // listEdgeStem
         }*/
+        public double WeightingEdgeRF(CollectionDocument cd, CollectionDocument cq, Edge<string> edge, string word1, string word2, int noQuery)
+        {
+            List<double> listProbabilityStemIJ = new List<double>();
+            double lamda = 0.6;
+            double sigmaPCW = 0;
+            CountStemCoOccurrence(cd, cq, word1, word2, noQuery);
+            sigmaPCW = CountProbabilityOfDocument(cd, cq, word1, word2, noQuery) * ((lamda * stemCoOccur2) + (1 - lamda) * stemCoOccur10);
+            double weight = sigmaPCW;
+            return weight;
+        }
         public double ComputeWeightVertex(string word, CollectionDocument cd, CollectionDocument cq, int noQuery)
         {
             //s(w(n)) = w(n)f(avg) * idf(w(n))
@@ -832,6 +1145,19 @@ namespace InformationRetrieval
             MakeAffinityQueryScoreDictionary();
             //PrintAffinityScore();
         }
+        public void MakeWeightVertexAsAffinityScore()
+        {
+            arrPhiJTPlus1 = new double[stem.Length];
+            arrPhiJTPlus1Query = new Dictionary<string, double>();
+            for (int i=0; i < stem.Length; i++)
+            {
+                arrPhiJTPlus1[i] = stem[i].getWeight();
+                if (queryStemmedWord.Contains(stem[i].getData()))
+                    arrPhiJTPlus1Query.Add(stem[i].getData(), arrPhiJTPlus1[i]);
+            }
+            MakeAffinityScoreDictionary();
+            MakeAffinityQueryScoreDictionary();
+        }
         public void MakeCandidateTerm()
         {
             var arrPhiJTPlus1QueryRanked = (from pair in arrPhiJTPlus1Query orderby pair.Value descending select pair).ToList();
@@ -896,10 +1222,354 @@ namespace InformationRetrieval
                 listCandidateTerm.Add(term1);
             }
         }
+        public void WriteCandidateTerm(int noQuery)
+        {
+            using (StreamWriter sw = File.AppendText(@"C: \Users\Mochamad Lutfi F\Documents\Visual Studio 2015\Projects\ConsoleApplication11\output\Query\Candidate Term.txt"))
+            {
+                sw.WriteLine("Nomor Query = {0}", noQuery);
+                foreach (KeyValuePair<string, double> kvp in candidateTerm)
+                    sw.WriteLine("{0}", kvp.Key);
+                sw.WriteLine("Kombinasi kata :");
+                for (int i = 0; i < listCandidateTerm.Count; i++)
+                {
+                    for (int j = 0; j < listCandidateTerm[i].Length; j++)
+                        sw.Write("{0} ", listCandidateTerm[i][j]);
+                    sw.WriteLine();
+                }
+            }
+        }
+        public void Make6CandidateTerm()
+        {
+            var arrPhiJTPlus1QueryRanked = (from pair in arrPhiJTPlus1Query orderby pair.Value descending select pair).ToList();
+            foreach (KeyValuePair<string, double> kvp in arrPhiJTPlus1QueryRanked)
+            {
+                if (arrPhiJTPlus1QueryRanked.Count > 5)
+                {
+                    if (candidateTerm.Count < 6)
+                        candidateTerm.Add(kvp.Key, kvp.Value);
+                }
+                else
+                    candidateTerm.Add(kvp.Key, kvp.Value);
+            }
+            string[] T = new string[candidateTerm.Count];
+            int i = 0;
+            foreach (KeyValuePair<string, double> kvp in candidateTerm)
+            {
+                T[i] = kvp.Key;
+                i++;
+            }
+            if (candidateTerm.Count > 5)
+            {
+                // 1 kata
+                string[] term1 = new string[1];
+                term1[0] = T[0];
+                string[] term2 = new string[1];
+                term2[0] = T[1];
+                string[] term3 = new string[1];
+                term3[0] = T[2];
+                string[] term4 = new string[1];
+                term4[0] = T[3];
+                string[] term5 = new string[1];
+                term5[0] = T[4];
+                string[] term6 = new string[1];
+                term6[0] = T[5];
+                // 2 kata
+                string[] term12 = term1.Concat(term2).ToArray();
+                string[] term13 = term1.Concat(term3).ToArray();
+                string[] term14 = term1.Concat(term4).ToArray();
+                string[] term15 = term1.Concat(term5).ToArray();
+                string[] term16 = term1.Concat(term6).ToArray();
+                string[] term23 = term2.Concat(term3).ToArray();
+                string[] term24 = term2.Concat(term4).ToArray();
+                string[] term25 = term2.Concat(term5).ToArray();
+                string[] term26 = term2.Concat(term6).ToArray();
+                string[] term34 = term3.Concat(term4).ToArray();
+                string[] term35 = term3.Concat(term5).ToArray();
+                string[] term36 = term3.Concat(term6).ToArray();
+                string[] term45 = term4.Concat(term5).ToArray();
+                string[] term46 = term4.Concat(term6).ToArray();
+                string[] term56 = term5.Concat(term6).ToArray();
+                // 3 kata
+                string[] term123 = term12.Concat(term3).ToArray();
+                string[] term124 = term12.Concat(term4).ToArray();
+                string[] term125 = term12.Concat(term5).ToArray();
+                string[] term126 = term12.Concat(term6).ToArray();
+                string[] term134 = term13.Concat(term4).ToArray();
+                string[] term135 = term13.Concat(term5).ToArray();
+                string[] term136 = term13.Concat(term6).ToArray();
+                string[] term145 = term14.Concat(term5).ToArray();
+                string[] term146 = term14.Concat(term6).ToArray();
+                string[] term156 = term15.Concat(term6).ToArray();
+                string[] term234 = term23.Concat(term4).ToArray();
+                string[] term235 = term23.Concat(term5).ToArray();
+                string[] term236 = term23.Concat(term6).ToArray();
+                string[] term245 = term24.Concat(term5).ToArray();
+                string[] term246 = term24.Concat(term6).ToArray();
+                string[] term256 = term25.Concat(term6).ToArray();
+                string[] term345 = term34.Concat(term5).ToArray();
+                string[] term346 = term34.Concat(term6).ToArray();
+                string[] term356 = term35.Concat(term6).ToArray();
+                string[] term456 = term45.Concat(term6).ToArray();
+                // 4 kata
+                string[] term1234 = term123.Concat(term4).ToArray();
+                string[] term1235 = term123.Concat(term5).ToArray();
+                string[] term1236 = term123.Concat(term6).ToArray();
+                string[] term1345 = term134.Concat(term5).ToArray();
+                string[] term1346 = term134.Concat(term6).ToArray();
+                string[] term1356 = term135.Concat(term6).ToArray();
+                string[] term1456 = term145.Concat(term6).ToArray();
+                string[] term2345 = term234.Concat(term5).ToArray();
+                string[] term2346 = term234.Concat(term6).ToArray();
+                string[] term2356 = term235.Concat(term6).ToArray();
+                string[] term2456 = term245.Concat(term6).ToArray();
+                string[] term3456 = term345.Concat(term6).ToArray();
+                // 5 kata
+                string[] term12345 = term1234.Concat(term5).ToArray();
+                string[] term12346 = term1234.Concat(term6).ToArray();
+                string[] term23456 = term2345.Concat(term6).ToArray();
+                // 6 kata
+                string[] term123456 = term12345.Concat(term6).ToArray();
+                // 1 kata
+                listCandidateTerm.Add(term1);
+                listCandidateTerm.Add(term2);
+                listCandidateTerm.Add(term3);
+                listCandidateTerm.Add(term4);
+                listCandidateTerm.Add(term5);
+                listCandidateTerm.Add(term6);
+                // 2 kata
+                listCandidateTerm.Add(term12);
+                listCandidateTerm.Add(term13);
+                listCandidateTerm.Add(term14);
+                listCandidateTerm.Add(term15);
+                listCandidateTerm.Add(term16);
+                listCandidateTerm.Add(term23);
+                listCandidateTerm.Add(term24);
+                listCandidateTerm.Add(term25);
+                listCandidateTerm.Add(term26);
+                listCandidateTerm.Add(term34);
+                listCandidateTerm.Add(term35);
+                listCandidateTerm.Add(term36);
+                listCandidateTerm.Add(term45);
+                listCandidateTerm.Add(term46);
+                listCandidateTerm.Add(term56);
+                // 3 kata
+                listCandidateTerm.Add(term123);
+                listCandidateTerm.Add(term124);
+                listCandidateTerm.Add(term125);
+                listCandidateTerm.Add(term126);
+                listCandidateTerm.Add(term134);
+                listCandidateTerm.Add(term135);
+                listCandidateTerm.Add(term136);
+                listCandidateTerm.Add(term145);
+                listCandidateTerm.Add(term146);
+                listCandidateTerm.Add(term156);
+                listCandidateTerm.Add(term234);
+                listCandidateTerm.Add(term235);
+                listCandidateTerm.Add(term236);
+                listCandidateTerm.Add(term245);
+                listCandidateTerm.Add(term246);
+                listCandidateTerm.Add(term256);
+                listCandidateTerm.Add(term345);
+                listCandidateTerm.Add(term346);
+                listCandidateTerm.Add(term356);
+                listCandidateTerm.Add(term456);
+                // 4 kata
+                listCandidateTerm.Add(term1234);
+                listCandidateTerm.Add(term1235);
+                listCandidateTerm.Add(term1236);
+                listCandidateTerm.Add(term1345);
+                listCandidateTerm.Add(term1346);
+                listCandidateTerm.Add(term1356);
+                listCandidateTerm.Add(term1456);
+                listCandidateTerm.Add(term2345);
+                listCandidateTerm.Add(term2346);
+                listCandidateTerm.Add(term2356);
+                listCandidateTerm.Add(term2456);
+                listCandidateTerm.Add(term3456);
+                // 5 kata
+                listCandidateTerm.Add(term12345);
+                listCandidateTerm.Add(term12346);
+                listCandidateTerm.Add(term23456);
+                // 6 kata
+                listCandidateTerm.Add(term123456);
+            }
+            else if (candidateTerm.Count == 5)
+            {
+                // 1 kata
+                string[] term1 = new string[1];
+                term1[0] = T[0];
+                string[] term2 = new string[1];
+                term2[0] = T[1];
+                string[] term3 = new string[1];
+                term3[0] = T[2];
+                string[] term4 = new string[1];
+                term4[0] = T[3];
+                string[] term5 = new string[1];
+                term5[0] = T[4];
+                // 2 kata
+                string[] term12 = term1.Concat(term2).ToArray();
+                string[] term13 = term1.Concat(term3).ToArray();
+                string[] term14 = term1.Concat(term4).ToArray();
+                string[] term15 = term1.Concat(term5).ToArray();
+                string[] term23 = term2.Concat(term3).ToArray();
+                string[] term24 = term2.Concat(term4).ToArray();
+                string[] term25 = term2.Concat(term5).ToArray();
+                string[] term34 = term3.Concat(term4).ToArray();
+                string[] term35 = term3.Concat(term5).ToArray();
+                string[] term45 = term4.Concat(term5).ToArray();
+                // 3 kata
+                string[] term123 = term12.Concat(term3).ToArray();
+                string[] term124 = term12.Concat(term4).ToArray();
+                string[] term125 = term12.Concat(term5).ToArray();
+                string[] term134 = term13.Concat(term4).ToArray();
+                string[] term135 = term13.Concat(term5).ToArray();
+                string[] term145 = term14.Concat(term5).ToArray();
+                string[] term234 = term23.Concat(term4).ToArray();
+                string[] term235 = term23.Concat(term5).ToArray();
+                string[] term245 = term24.Concat(term5).ToArray();
+                string[] term345 = term34.Concat(term5).ToArray();
+                // 4 kata
+                string[] term1234 = term123.Concat(term4).ToArray();
+                string[] term1235 = term123.Concat(term5).ToArray();
+                string[] term1345 = term134.Concat(term5).ToArray();
+                string[] term2345 = term234.Concat(term5).ToArray();
+                // 5 kata
+                string[] term12345 = term1234.Concat(term5).ToArray();
+                // 1 kata
+                listCandidateTerm.Add(term1);
+                listCandidateTerm.Add(term2);
+                listCandidateTerm.Add(term3);
+                listCandidateTerm.Add(term4);
+                listCandidateTerm.Add(term5);
+                // 2 kata
+                listCandidateTerm.Add(term12);
+                listCandidateTerm.Add(term13);
+                listCandidateTerm.Add(term14);
+                listCandidateTerm.Add(term15);
+                listCandidateTerm.Add(term23);
+                listCandidateTerm.Add(term24);
+                listCandidateTerm.Add(term25);
+                listCandidateTerm.Add(term34);
+                listCandidateTerm.Add(term35);
+                listCandidateTerm.Add(term45);
+                // 3 kata
+                listCandidateTerm.Add(term123);
+                listCandidateTerm.Add(term124);
+                listCandidateTerm.Add(term125);
+                listCandidateTerm.Add(term134);
+                listCandidateTerm.Add(term135);
+                listCandidateTerm.Add(term145);
+                listCandidateTerm.Add(term234);
+                listCandidateTerm.Add(term235);
+                listCandidateTerm.Add(term245);
+                listCandidateTerm.Add(term345);
+                // 4 kata
+                listCandidateTerm.Add(term1234);
+                listCandidateTerm.Add(term1235);
+                listCandidateTerm.Add(term1345);
+                listCandidateTerm.Add(term2345);
+                // 5 kata
+                listCandidateTerm.Add(term12345);
+            }
+            else if (candidateTerm.Count == 4)
+            {
+                // 1 kata
+                string[] term1 = new string[1];
+                term1[0] = T[0];
+                string[] term2 = new string[1];
+                term2[0] = T[1];
+                string[] term3 = new string[1];
+                term3[0] = T[2];
+                string[] term4 = new string[1];
+                term4[0] = T[3];
+                // 2 kata
+                string[] term12 = term1.Concat(term2).ToArray();
+                string[] term13 = term1.Concat(term3).ToArray();
+                string[] term14 = term1.Concat(term4).ToArray();
+                string[] term23 = term2.Concat(term3).ToArray();
+                string[] term24 = term2.Concat(term4).ToArray();
+                string[] term34 = term3.Concat(term4).ToArray();
+                // 3 kata
+                string[] term123 = term12.Concat(term3).ToArray();
+                string[] term124 = term12.Concat(term4).ToArray();
+                string[] term134 = term13.Concat(term4).ToArray();
+                string[] term234 = term23.Concat(term4).ToArray();
+                // 4 kata
+                string[] term1234 = term123.Concat(term4).ToArray();
+                // 1 kata
+                listCandidateTerm.Add(term1);
+                listCandidateTerm.Add(term2);
+                listCandidateTerm.Add(term3);
+                listCandidateTerm.Add(term4);
+                // 2 kata
+                listCandidateTerm.Add(term12);
+                listCandidateTerm.Add(term13);
+                listCandidateTerm.Add(term14);
+                listCandidateTerm.Add(term23);
+                listCandidateTerm.Add(term24);
+                listCandidateTerm.Add(term34);
+                // 3 kata
+                listCandidateTerm.Add(term123);
+                listCandidateTerm.Add(term124);
+                listCandidateTerm.Add(term134);
+                listCandidateTerm.Add(term234);
+                // 4 kata
+                listCandidateTerm.Add(term1234);
+            }
+            else if (candidateTerm.Count == 3)
+            {
+                string[] term1 = new string[1];
+                term1[0] = T[0];
+                string[] term2 = new string[1];
+                term2[0] = T[1];
+                string[] term3 = new string[1];
+                term3[0] = T[2];
+                string[] term12 = term1.Concat(term2).ToArray();
+                string[] term13 = term1.Concat(term3).ToArray();
+                string[] term23 = term2.Concat(term3).ToArray();
+                string[] term33 = term12.Concat(term3).ToArray();
+                listCandidateTerm.Add(term1);
+                listCandidateTerm.Add(term2);
+                listCandidateTerm.Add(term3);
+                listCandidateTerm.Add(term12);
+                listCandidateTerm.Add(term13);
+                listCandidateTerm.Add(term23);
+                listCandidateTerm.Add(term33);
+            }
+            else if (candidateTerm.Count == 2)
+            {
+                string[] term1 = new string[1];
+                term1[0] = T[0];
+                string[] term2 = new string[1];
+                term2[0] = T[1];
+                string[] term12 = term1.Concat(term2).ToArray();
+                listCandidateTerm.Add(term1);
+                listCandidateTerm.Add(term2);
+                listCandidateTerm.Add(term12);
+            }
+            else if (candidateTerm.Count == 1)
+            {
+                string[] term1 = new string[1];
+                term1[0] = T[0];
+                listCandidateTerm.Add(term1);
+            }
+        }
         public void WeightingVertex(CollectionDocument cd, CollectionDocument cq, int noQuery)
         {
             for (int j = 0; j < stem.Count(); j++)
                 stem[j].setWeight(ComputeWeightVertex(stem[j].getData(), cd, cq, noQuery));
+        }
+        public void WriteWeightVertex(int noQuery)
+        {
+            SortedDictionary<string, double> tempDict = new SortedDictionary<string, double>();
+            for (int i = 0; i < stem.Length; i++)
+                tempDict.Add(stem[i].getData(), stem[i].getWeight());
+            using (StreamWriter sw = File.AppendText(@"C: \Users\Mochamad Lutfi F\Documents\Visual Studio 2015\Projects\ConsoleApplication11\output\Query\Weight Node factor s.txt"))
+            {
+                sw.WriteLine("No Query = {0}", noQuery);
+                foreach(KeyValuePair<string, double> kvp in tempDict)
+                    sw.WriteLine("Node {0} | Weight Vertex = {1}", kvp.Key, kvp.Value);
+            }
         }
         public double ComputeScoreTermQuery(string[] term)
         {
@@ -990,6 +1660,16 @@ namespace InformationRetrieval
             for(int i=0; i<stem.Length;i++)
                 affinityScoreTerm.Add(stem[i].getData(), arrPhiJTPlus1[i]);
         }
+        public void WriteRankedAffinityScoreDictionary(int noQuery)
+        {
+            var arrPhiJTPlus1QueryRanked = (from pair in arrPhiJTPlus1Query orderby pair.Value descending select pair).ToList();
+            using (StreamWriter sw = File.AppendText(@"C: \Users\Mochamad Lutfi F\Documents\Visual Studio 2015\Projects\ConsoleApplication11\output\Query\Ranked Affinity Score.txt"))
+            {
+                sw.WriteLine("Nomor Query = {0}", noQuery);
+                foreach (KeyValuePair<string, double> kvp in arrPhiJTPlus1QueryRanked)
+                    sw.WriteLine("Node {0} | Affinity Score = {1}", kvp.Key, kvp.Value);
+            }
+        }
         public void MakeAffinityQueryScoreDictionary()
         {
             for (int i = 0; i < queryStemmedWord.Count; i++)
@@ -1002,6 +1682,15 @@ namespace InformationRetrieval
             {
                 Console.WriteLine("{3} Weight Edge ({0},{1}) = {2}", listEdgeStem[i].getNode1().getData(), listEdgeStem[i].getNode2().getData(), listEdgeStem[i].getWeight(), j);
                 j++;
+            }
+        }
+        public void WriteWeightEdge(int noQuery)
+        {
+            using (StreamWriter sw = File.AppendText(@"C: \Users\Mochamad Lutfi F\Documents\Visual Studio 2015\Projects\ConsoleApplication11\output\Query\Weight Edge.txt"))
+            {
+                sw.WriteLine("Nomor Query = {0}", noQuery);
+                for (int i = 0; i < listEdgeStem.Count; i++)
+                    sw.WriteLine("Edge ({0},{1}) | Weight Edge = {2}", listEdgeStem[i].getNode1().getData(), listEdgeStem[i].getNode2().getData(), listEdgeStem[i].getWeight());                   
             }
         }
         public void PrintWeightVertex()
@@ -1046,6 +1735,24 @@ namespace InformationRetrieval
                         Console.Write(", ");
                 }
                 Console.WriteLine("]");
+            }
+        }
+        public void WriteProbabilityMatrix(int noQuery)
+        {
+            using (StreamWriter sw = File.AppendText(@"C: \Users\Mochamad Lutfi F\Documents\Visual Studio 2015\Projects\ConsoleApplication11\output\Query\Matrix Probability.txt"))
+            {
+                sw.WriteLine("Nomor Query = {0}", noQuery);
+                for (int i = 0; i < uniqueStemmedWord.Count; i++)
+                {
+                    sw.Write("[ ");
+                    for (int j = 0; j < uniqueStemmedWord.Count; j++)
+                    {
+                        sw.Write("{0}", probabilityMatrix[i, j]);
+                        if (j < (uniqueStemmedWord.Count - 1))
+                            sw.Write(", ");
+                    }
+                    sw.WriteLine("]");
+                }
             }
         }
         public void PrintUniqueStemmedWordInN()
@@ -1097,6 +1804,21 @@ namespace InformationRetrieval
                 foreach (string s in choosenTerm.Key)
                     Console.Write("{0} ", s);
                 Console.WriteLine();
+            }
+        }
+        public void WriteChoosenTerm(int noQuery)
+        {
+            using (StreamWriter sw = File.AppendText(@"C: \Users\Mochamad Lutfi F\Documents\Visual Studio 2015\Projects\ConsoleApplication11\output\Query\Reformulated Query.txt"))
+            {
+                sw.Write("Term yang dipilih untuk query {0}: ", noQuery);
+                if (choosenTerm.Equals(default(KeyValuePair<string[], double>)))
+                    sw.WriteLine(" ");
+                else
+                {
+                    foreach (string s in choosenTerm.Key)
+                        sw.Write("{0} ", s);
+                    sw.WriteLine();
+                }
             }
         }
         public void PrintDocRel(CollectionDocument cq, int noQuery)
