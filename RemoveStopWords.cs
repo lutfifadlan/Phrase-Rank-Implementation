@@ -19,6 +19,8 @@ namespace InformationRetrieval
             foreach (string s in stopWords)
                 stopWord.Add(s, true);
             //char[] delimiters = new char[] { ' ', ',', ';', '.', '-', '(', ')', ':', '/' };
+            //\s,;.-\n':()/?\t\[\]"%=><*#@!${}^&+
+              
             char[] delimiters = new char[]
             {
                 ' ',
@@ -56,6 +58,7 @@ namespace InformationRetrieval
             StringBuilder builder = new StringBuilder();
             foreach (string currentWord in words)
             {
+                currentWord.ToLower();
                 if (!stopWord.ContainsKey(currentWord))
                     builder.Append(currentWord).Append(' ');
             }

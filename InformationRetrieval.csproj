@@ -71,6 +71,7 @@
     <Compile Include="ShowRetrievalResult.Designer.cs">
       <DependentUpon>ShowRetrievalResult.cs</DependentUpon>
     </Compile>
+    <Compile Include="StopwordTool.cs" />
     <Compile Include="Weighting.cs" />
     <Compile Include="SaveIndexingToFile.cs" />
     <Compile Include="Indexing.cs" />

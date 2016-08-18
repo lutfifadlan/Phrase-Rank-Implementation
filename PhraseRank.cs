@@ -53,7 +53,9 @@ namespace InformationRetrieval
         public Edge<string> edgeStem;
         public List<Edge<string>> listEdgeStem = new List<Edge<string>>();
         public int stemCoOccur2;
+        public Dictionary<int, int> stemCoOccur2Dict = new Dictionary<int, int>();
         public int stemCoOccur10;
+        public Dictionary<int, int> stemCoOccur10Dict = new Dictionary<int, int>();
         public int stemCoOccur4inD;
         public List<int> listStemCoOccur2 = new List<int>();
         public List<int> listStemCoOccur4 = new List<int>();
@@ -208,22 +210,21 @@ namespace InformationRetrieval
             WriteChoosenTerm(noQuery);
             Clearing(cd, cq, noQuery);
         }
+        // NIAP lebih besar jika tidak menggunakan random walk
         public void CreateAffinityGraphSF(CollectionDocument cd, CollectionDocument cq, int noQuery)
         {
             CreateVertexGraph();
-            //Console.WriteLine("a");
             CreateEdgeGraphAndWeightingEdge(cd, cq, noQuery);
             WriteProbabilityMatrix(noQuery);
             WriteWeightEdge(noQuery);
-            //Console.WriteLine("b");
             MakeEdgeStemUnique(); // Delete edge with same node
-            //Console.WriteLine("c");
-            //CreateProbabilityMatrix(cd, cq, noQuery);
-            //Console.WriteLine("d");
+            //using (StreamWriter sw = File.AppendText(@"C: \Users\Mochamad Lutfi F\Documents\Visual Studio 2015\Projects\ConsoleApplication11\output\Query\PHIJt.txt"))
+              //  sw.WriteLine("Nomor Query = {0}", noQuery);
             RandomWalk();
-            //Console.WriteLine("e");
-            WriteRankedAffinityScoreDictionary(noQuery);
+            //MakeAffinityScoreDictionary();
+            //MakeAffinityQueryScoreDictionary();
             MakeCandidateTerm();
+            WriteRankedAffinityScoreQueryDictionary(noQuery);
             WriteCandidateTerm(noQuery);
             //Console.WriteLine("f");
             //PrintAffinityScore();
@@ -238,50 +239,70 @@ namespace InformationRetrieval
             WriteWeightEdge(noQuery);
             MakeEdgeStemUnique(); // Delete edge with same node
             RandomWalk();
-            WriteRankedAffinityScoreDictionary(noQuery);
+            WriteRankedAffinityScoreQueryDictionary(noQuery);
             Make6CandidateTerm();
             WriteCandidateTerm(noQuery);
         }
         public void CreateAffinityGraphRF(CollectionDocument cd, CollectionDocument cq, int noQuery)
         {
             CreateVertexGraph();
-            WeightingVertex(cd, cq, noQuery);
-            WriteWeightVertex(noQuery);
+            //WeightingVertex(cd, cq, noQuery);
+            //WriteWeightVertex(noQuery);
             CreateEdgeGraphAndWeightingEdgeRF(cd, cq, noQuery);
             WriteProbabilityMatrix(noQuery);
             WriteWeightEdge(noQuery);
             MakeEdgeStemUnique(); // Delete edge with same node
-            MakeWeightVertexAsAffinityScore();
-            WriteRankedAffinityScoreDictionary(noQuery);
+            //using (StreamWriter sw = File.AppendText(@"C: \Users\Mochamad Lutfi F\Documents\Visual Studio 2015\Projects\ConsoleApplication11\output\Query\PHIJt.txt"))
+              //  sw.WriteLine("Nomor Query = {0}", noQuery);
+            RandomWalk();
+            WeightingVertex(cd, cq, noQuery);
+            WriteWeightVertex(noQuery);
+            //MakeWeightVertexAsAffinityScore();
+            CombineFactorSToVertexWeight();
             MakeCandidateTerm();
+            WriteRankedAffinityScoreQueryDictionary(noQuery);
             WriteCandidateTerm(noQuery);
         }
         public void CreateAffinityGraphRF6Term(CollectionDocument cd, CollectionDocument cq, int noQuery)
         {
             CreateVertexGraph();
-            WeightingVertex(cd, cq, noQuery);
-            WriteWeightVertex(noQuery);
+            //WeightingVertex(cd, cq, noQuery);
+            //WriteWeightVertex(noQuery);
             CreateEdgeGraphAndWeightingEdgeRF(cd, cq, noQuery);
             WriteProbabilityMatrix(noQuery);
             WriteWeightEdge(noQuery);
             MakeEdgeStemUnique(); // Delete edge with same node
-            MakeWeightVertexAsAffinityScore();
-            WriteRankedAffinityScoreDictionary(noQuery);
+            //MakeWeightVertexAsAffinityScore();
+            //CombineFactorSToVertexWeight();
+            RandomWalk();
+            WeightingVertex(cd, cq, noQuery);
+            WriteWeightVertex(noQuery);
+            //MakeWeightVertexAsAffinityScore();
+            CombineFactorSToVertexWeight();
             Make6CandidateTerm();
+            WriteRankedAffinityScoreQueryDictionary(noQuery);
             WriteCandidateTerm(noQuery);
         }
         public void CreateAffinityGraph(CollectionDocument cd, CollectionDocument cq, int noQuery)
         {
             CreateVertexGraph();
-            WeightingVertex(cd, cq, noQuery);
-            WriteWeightVertex(noQuery);
+            //WeightingVertex(cd, cq, noQuery);
+            //WriteWeightVertex(noQuery);
             CreateEdgeGraphAndWeightingEdge(cd, cq, noQuery);
             WriteProbabilityMatrix(noQuery);
             WriteWeightEdge(noQuery);
-            MakeEdgeStemUnique(); // Delete edge with same node
-            MakeWeightVertexAsAffinityScore();
-            WriteRankedAffinityScoreDictionary(noQuery);
+            MakeEdgeStemUnique(); // Delete edge with same node 
+            //MakeWeightVertexAsAffinityScore();
+            //using (StreamWriter sw = File.AppendText(@"C: \Users\Mochamad Lutfi F\Documents\Visual Studio 2015\Projects\ConsoleApplication11\output\Query\PHIJt.txt"))
+              //  sw.WriteLine("Nomor Query = {0}", noQuery);
+            RandomWalk();
+            WeightingVertex(cd, cq, noQuery);
+            WriteWeightVertex(noQuery);
+            //MakeWeightVertexAsAffinityScore();
+            CombineFactorSToVertexWeight();
+            //CombineFactorSToVertexWeight();
             MakeCandidateTerm();
+            WriteRankedAffinityScoreQueryDictionary(noQuery);
             WriteCandidateTerm(noQuery);
         }
         public void CreateAffinityGraph6Term(CollectionDocument cd, CollectionDocument cq, int noQuery)
@@ -293,42 +314,38 @@ namespace InformationRetrieval
             WriteProbabilityMatrix(noQuery);
             WriteWeightEdge(noQuery);
             MakeEdgeStemUnique(); // Delete edge with same node
+            //MakeWeightVertexAsAffinityScore();
+            //CombineFactorSToVertexWeight();
+            RandomWalk();
+            WeightingVertex(cd, cq, noQuery);
+            WriteWeightVertex(noQuery);
             MakeWeightVertexAsAffinityScore();
-            WriteRankedAffinityScoreDictionary(noQuery);
             Make6CandidateTerm();
+            WriteRankedAffinityScoreQueryDictionary(noQuery);
             WriteCandidateTerm(noQuery);
         }
         public void RankingTerm(CollectionDocument cd, CollectionDocument cq, int noQuery)
         {
-
             for (int i = 0; i < listCandidateTerm.Count; i++)
             {
                 //f(x,Q) =(rank) z(x) * sigma(w(n) dari x)phi(w(n)) / n
-                //termWt = termWt * ComputeFactorZ(cd, T);
                 double termWt = ComputeScoreTermQuery(listCandidateTerm[i]);
                 termWt = termWt * ComputeFactorZ(cd, listCandidateTerm[i]);
-                listScoreCandidateTerm.Add(termWt);
-                candidateTermScore.Add(listCandidateTerm[i], termWt);
+                if (termWt == 0) { }
+                else
+                {
+                    listScoreCandidateTerm.Add(termWt);
+                    candidateTermScore.Add(listCandidateTerm[i], termWt);
+                }
             }
-            //PrintRankedCandidateTerm();
             rankedCandidateTermScore = (from pair in candidateTermScore orderby pair.Value descending select pair).ToList();
             if (rankedCandidateTermScore.Count > 0)
             {
                 choosenTerm = rankedCandidateTermScore.First();
-                //PrintChoosenTerm(noQuery);
-                // add reformulated query to new collection query
-                //cq.getTermQueryID().Remove(noQuery);
-                //Console.WriteLine("r");
-                //cq.getTermQueryID().Add(noQuery, choosenTerm.Key);
-                //cq.getTermQueryID()[noQuery] = choosenTerm.Key;
                 cq.getTermQueryReformulatedID().Add(noQuery, choosenTerm.Key);
             }
             else
-            {
-                //Console.WriteLine("asup dieu");
                 choosenTerm = new KeyValuePair<string[], double>();
-            }
-            //Console.WriteLine("add");
         }
         public void RankingTermZF(CollectionDocument cd, CollectionDocument cq, int noQuery)
         {
@@ -336,31 +353,22 @@ namespace InformationRetrieval
             for (int i = 0; i < listCandidateTerm.Count; i++)
             {
                 //f(x,Q) =(rank) z(x) * sigma(w(n) dari x)phi(w(n)) / n
-                //termWt = termWt * ComputeFactorZ(cd, T);
                 double termWt = ComputeScoreTermQuery(listCandidateTerm[i]);
-                //termWt = termWt * ComputeFactorZ(cd, listCandidateTerm[i]);
-                listScoreCandidateTerm.Add(termWt);
-                candidateTermScore.Add(listCandidateTerm[i], termWt);
+                if (termWt == 0) { }
+                else
+                {
+                    listScoreCandidateTerm.Add(termWt);
+                    candidateTermScore.Add(listCandidateTerm[i], termWt);
+                }
             }
-            //PrintRankedCandidateTerm();
             rankedCandidateTermScore = (from pair in candidateTermScore orderby pair.Value descending select pair).ToList();
             if (rankedCandidateTermScore.Count > 0)
             {
                 choosenTerm = rankedCandidateTermScore.First();
-                //PrintChoosenTerm(noQuery);
-                // add reformulated query to new collection query
-                //cq.getTermQueryID().Remove(noQuery);
-                //Console.WriteLine("r");
-                //cq.getTermQueryID().Add(noQuery, choosenTerm.Key);
-                //cq.getTermQueryID()[noQuery] = choosenTerm.Key;
                 cq.getTermQueryReformulatedID().Add(noQuery, choosenTerm.Key);
             }
             else
-            {
-               // Console.WriteLine("asup dieu");
                 choosenTerm = new KeyValuePair<string[], double>();
-            }
-            //Console.WriteLine("add");
         }
         public void WriteRankedCandidateTermScore(int noQuery)
         {
@@ -438,56 +446,6 @@ namespace InformationRetrieval
             }
             return uniqueStem.Count;
         }
-        /*
-        public bool isAdjacent(CollectionDocument cd, string stem1, string stem2, int noPseudoRelDoc)
-        {
-            int tempPos1;
-            int tempPos2;
-            int i = 0;
-            int j = 0;
-            List<int> listTempPos1 = new List<int>();
-            List<int> listTempPos2 = new List<int>();
-            foreach (KeyValuePair<string, List<int>> kvp in cd.stemmedWordPositionDocument[noPseudoRelDoc])
-            {
-                if (kvp.Key == stem1)
-                {
-                    if (kvp.Value.Count == 1)
-                    {
-                        tempPos1 = kvp.Value[0];
-                        listTempPos1.Add(kvp.Value[0]);
-                    }
-                    else
-                    {
-                        i = kvp.Value.Count;
-                        foreach (int k in kvp.Value)
-                            listTempPos1.Add(k);
-                    }
-                }
-                else if (kvp.Key == stem2)
-                {
-                    if (kvp.Value.Count == 1)
-                    {
-                        tempPos2 = kvp.Value[0];
-                        listTempPos2.Add(kvp.Value[0]);
-                    }
-                    else
-                    {
-                        j = kvp.Value.Count;
-                        foreach (int k in kvp.Value)
-                            listTempPos2.Add(k);
-                    }
-                }
-            }
-            foreach (int k in listTempPos1)
-            {
-                foreach (int m in listTempPos2)
-                {
-                    if ((k - m) == -1 || (k - m) == 1)
-                        return true;
-                }
-            }
-            return false;
-        }*/
         public void CreateVertexGraph()
         {
             stem = new Vertex<string>[uniqueStemmedWord.Count];
@@ -504,6 +462,7 @@ namespace InformationRetrieval
         {
             probabilityMatrix = new double[uniqueStemmedWord.Count, uniqueStemmedWord.Count];
             //Console.WriteLine("jumlah pseudo doc rel = {0}", cq.getListPseudoRelDoc()[noQuery].Count);
+            Console.WriteLine("noQuery = {0}", noQuery);
             foreach (int j in cq.getListPseudoRelDoc()[noQuery])
             {
                 //Console.WriteLine("Dokumen Relevan = {0}", j);
@@ -523,19 +482,43 @@ namespace InformationRetrieval
                             adj.setW1(tempS1);
                             adj.setW2(tempS2);
                             adj.setIsAdjacent(true);
-                            if (cd.listAdjacentDictionary[noQuery][j].Contains(adj))
+                            if (j == 0)
                             {
-                                //Console.WriteLine("asup");
-                                edgeStem = new Edge<string>();
-                                edgeStem.setNoStem1(m);
-                                edgeStem.setNode1(stem[m]);
-                                edgeStem.setNoStem2(k);
-                                edgeStem.setNode2(stem[k]);
-                                double w = WeightingEdge(cd, cq, edgeStem, edgeStem.getNode1().getData(), edgeStem.getNode2().getData(), noQuery);
-                                edgeStem.setWeight(w);
-                                listEdgeStem.Add(edgeStem);
-                                probabilityMatrix[m, k] = w;
-                                probabilityMatrix[k, m] = w;
+                                if (cq.getAdjacentQuery()[noQuery].Contains(adj))//cd.listAdjacentDictionary[noQuery][j].Contains(adj))
+                                {
+                                    //Console.WriteLine("tempS1 = {0}", tempS1);
+                                    //Console.WriteLine("tempS2 = {0}", tempS2);
+                                    //Console.WriteLine("asup");
+                                    edgeStem = new Edge<string>();
+                                    edgeStem.setNoStem1(m);
+                                    edgeStem.setNode1(stem[m]);
+                                    edgeStem.setNoStem2(k);
+                                    edgeStem.setNode2(stem[k]);
+                                    double w = WeightingEdge(cd, cq, edgeStem, edgeStem.getNode1().getData(), edgeStem.getNode2().getData(), noQuery, j);
+                                    edgeStem.setWeight(w);
+                                    listEdgeStem.Add(edgeStem);
+                                    probabilityMatrix[m, k] = w;
+                                    probabilityMatrix[k, m] = w;
+                                }
+                            }
+                            else
+                            {
+                                if (cd.getAdjacentDocument()[j].Contains(adj))//cd.listAdjacentDictionary[noQuery][j].Contains(adj))
+                                {
+                                    //Console.WriteLine("asup");
+                                    //Console.WriteLine("tempS1 = {0}", tempS1);
+                                    //Console.WriteLine("tempS2 = {0}", tempS2);
+                                    edgeStem = new Edge<string>();
+                                    edgeStem.setNoStem1(m);
+                                    edgeStem.setNode1(stem[m]);
+                                    edgeStem.setNoStem2(k);
+                                    edgeStem.setNode2(stem[k]);
+                                    double w = WeightingEdge(cd, cq, edgeStem, edgeStem.getNode1().getData(), edgeStem.getNode2().getData(), noQuery, j);
+                                    edgeStem.setWeight(w);
+                                    listEdgeStem.Add(edgeStem);
+                                    probabilityMatrix[m, k] = w;
+                                    probabilityMatrix[k, m] = w;
+                                }
                             }
                         }
                         //edgeStem.getWeight();
@@ -594,19 +577,39 @@ namespace InformationRetrieval
                             adj.setW1(tempS1);
                             adj.setW2(tempS2);
                             adj.setIsAdjacent(true);
-                            if (cd.listAdjacentDictionary[noQuery][j].Contains(adj))
+                            if (j == 0)
                             {
-                                //Console.WriteLine("asup");
-                                edgeStem = new Edge<string>();
-                                edgeStem.setNoStem1(m);
-                                edgeStem.setNode1(stem[m]);
-                                edgeStem.setNoStem2(k);
-                                edgeStem.setNode2(stem[k]);
-                                double w = WeightingEdgeRF(cd, cq, edgeStem, edgeStem.getNode1().getData(), edgeStem.getNode2().getData(), noQuery);
-                                edgeStem.setWeight(w);
-                                listEdgeStem.Add(edgeStem);
-                                probabilityMatrix[m, k] = w;
-                                probabilityMatrix[k, m] = w;
+                                if (cq.getAdjacentQuery()[noQuery].Contains(adj))//cd.listAdjacentDictionary[noQuery][j].Contains(adj))
+                                {
+                                    //Console.WriteLine("asup");
+                                    edgeStem = new Edge<string>();
+                                    edgeStem.setNoStem1(m);
+                                    edgeStem.setNode1(stem[m]);
+                                    edgeStem.setNoStem2(k);
+                                    edgeStem.setNode2(stem[k]);
+                                    double w = WeightingEdgeRF(cd, cq, edgeStem, edgeStem.getNode1().getData(), edgeStem.getNode2().getData(), noQuery, j);
+                                    edgeStem.setWeight(w);
+                                    listEdgeStem.Add(edgeStem);
+                                    probabilityMatrix[m, k] = w;
+                                    probabilityMatrix[k, m] = w;
+                                }
+                            }
+                            else
+                            {
+                                if (cd.getAdjacentDocument()[j].Contains(adj))//cd.listAdjacentDictionary[noQuery][j].Contains(adj))
+                                {
+                                    //Console.WriteLine("asup");
+                                    edgeStem = new Edge<string>();
+                                    edgeStem.setNoStem1(m);
+                                    edgeStem.setNode1(stem[m]);
+                                    edgeStem.setNoStem2(k);
+                                    edgeStem.setNode2(stem[k]);
+                                    double w = WeightingEdgeRF(cd, cq, edgeStem, edgeStem.getNode1().getData(), edgeStem.getNode2().getData(), noQuery, j);
+                                    edgeStem.setWeight(w);
+                                    listEdgeStem.Add(edgeStem);
+                                    probabilityMatrix[m, k] = w;
+                                    probabilityMatrix[k, m] = w;
+                                }
                             }
                         }
                         //edgeStem.getWeight();
@@ -665,13 +668,17 @@ namespace InformationRetrieval
             stemCoOccur2 = 0;
             stemCoOccur10 = 0;
             int stemCoOccur2inDoc = 0;
+            int stemCoOccur10inDoc = 0;
             int tempStemCoOccur2 = 0;
+            int tempStemCoOccur10 = 0;
             //int tempNWord1 = 0;
             //int tempNWord2 = 0;
             int tempNWord1in2W = 0;
             int tempNWord2in2W = 0;
             int tempNWord1in10W = 0;
             int tempNWord2in10W = 0;
+            stemCoOccur2Dict.Clear();
+            stemCoOccur10Dict.Clear();
             //Console.WriteLine("word1 = {0}", word1);
             //Console.WriteLine("word2 = {0}", word2);
             foreach (int i in cq.getListPseudoRelDoc()[noQuery])
@@ -720,7 +727,10 @@ namespace InformationRetrieval
                     if(j%10 == 0)
                     {
                         if (tempNWord1in10W > 0 && tempNWord2in10W > 0)
+                        {
+                            stemCoOccur10inDoc++;
                             stemCoOccur10++;
+                        }
                         tempNWord1in10W = 0;
                         tempNWord2in10W = 0;
                     }
@@ -738,7 +748,10 @@ namespace InformationRetrieval
                 }
                 //tempStemCoOccur2 = stemCoOccur2;
                 tempStemCoOccur2 = stemCoOccur2inDoc;
+                tempStemCoOccur10 = stemCoOccur10inDoc;
                 listStemCoOccur2.Add(tempStemCoOccur2);
+                stemCoOccur2Dict.Add(i, stemCoOccur2inDoc);
+                stemCoOccur10Dict.Add(i, stemCoOccur10inDoc);
             }
             //listStemCoOccur2.Clear();
             
@@ -808,58 +821,10 @@ namespace InformationRetrieval
         {
             // count probability of document in which stem i and j co-occur given Q
             // compute without lamda (smoothing parameter)
-            /*
-            int nStringDocument = cd.getTermDocID()[noDoc].Length;
-            int nStringQuery = cd.getTermDocID()[0].Length;
-            int nStringDocQuery = nStringDocument + nStringQuery;*/
             int occurenceStemIJAtPseudoDoc = 0;
             double probabilityStemIJ = 0;
-            /*
-            Console.WriteLine("nStringDocument = {0}", nStringDocument);
-            Console.WriteLine("nStringQuery = {0}", nStringQuery);
-            Console.WriteLine("nStringDocQuery = {0}", nStringDocQuery);*/
-            /*
-            int nStemIAtDoc = 0;
-            int nStemIAtQuery = 0;
-            int nStemJAtDoc = 0;
-            int nStemJAtQuery = 0;
-            /*
-            double probabilityStemI = 0;
-            double probabilityStemJ = 0;
-            double probabilityStemIJ = 0;
-            for(int i=0; i<nStringDocument; i++)
-            {
-                if (cd.getTermDocID()[noDoc][i] == stemI)
-                    nStemIAtDoc++;
-                if (cd.getTermDocID()[noDoc][i] == stemJ)
-                    nStemJAtDoc++;
-            }
-            for(int i=0; i < nStringQuery; i++)
-            {
-                if (cd.getTermDocID()[0][i] == stemI)
-                    nStemIAtQuery++;
-                if (cd.getTermDocID()[0][i] == stemJ)
-                    nStemJAtQuery++;
-            }
-            /*
-            Console.WriteLine("nStemIAtDoc = {0}", nStemIAtDoc);
-            Console.WriteLine("nStemJAtDoc = {0}", nStemJAtDoc);
-            Console.WriteLine("nStemIAtQuery = {0}", nStemIAtQuery);
-            Console.WriteLine("nStemJAtQuery = {0}", nStemJAtQuery);*/
-            //probabilityStemI = (nStemIAtQuery/(double)nStringQuery) + (nStemIAtDoc/(double)nStringDocQuery);
-            //probabilityStemJ = (nStemJAtQuery/(double)nStringQuery) + (nStemJAtDoc/(double)nStringDocQuery);
-            /*
-            Console.WriteLine("probabilityStemI = {0}", probabilityStemI);
-            Console.WriteLine("probabilityStemJ = {0}", probabilityStemJ);*/
-            //probabilityStemIJ = probabilityStemI * probabilityStemJ;
-            //Console.WriteLine("probabilityStemIJ = {0}", probabilityStemIJ);
-            //return probabilityStemIJ;
             int nstemI;
             int nstemJ;
-          //  Console.WriteLine("noQuery = {0}", noQuery);
-            //foreach (int i in cq.getListPseudoRelDoc()[noQuery])
-           // Console.WriteLine("stemI = {0}", stemI);
-            //Console.WriteLine("stemJ = {0}", stemJ);
             foreach (int i in cq.getListPseudoRelDoc()[noQuery])
             {
                 nstemI = 0;
@@ -880,9 +845,10 @@ namespace InformationRetrieval
             }
            // Console.WriteLine("occurenceStemIJAtPseudoDoc = {0}", occurenceStemIJAtPseudoDoc);
             probabilityStemIJ = (double)occurenceStemIJAtPseudoDoc / (cq.getListPseudoRelDoc()[noQuery].Count/* - 1*/);
+            //Console.WriteLine("probabilityStemIJ = {0}", probabilityStemIJ);
             return probabilityStemIJ;
         }
-        public double WeightingEdge(CollectionDocument cd, CollectionDocument cq, Edge<string> edge, string word1, string word2, int noQuery)
+        public double WeightingEdge(CollectionDocument cd, CollectionDocument cq, Edge<string> edge, string word1, string word2, int noQuery, int pseudoRelDoc)
         {
             //l(i,j) = r * sigma(p(dk|Q) * (lamda(c(i,j)w2) + (1-lamda)(c(i,j)w10); sigma dk from N; lamda = 0.6
             //r = tfidf that confirm importance of connection between i and j in N
@@ -894,21 +860,26 @@ namespace InformationRetrieval
             double lamda = 0.6;
             double factorR = 0;
             double sigmaPCW = 0;
-            
+            int stemCoOccur2inRelDoc = 0;
+            int stemCoOccur10inRelDoc = 0;
             //Console.WriteLine("word1 = {0}", word1);
             //Console.WriteLine("word2 = {0}", word2);
             //Console.WriteLine("cc");
             CountStemCoOccurrence(cd, cq, word1, word2, noQuery);
+            stemCoOccur2inRelDoc = stemCoOccur2Dict[pseudoRelDoc];
+            stemCoOccur10inRelDoc = stemCoOccur10Dict[pseudoRelDoc];
             //Console.WriteLine("cd");
             int sigmaCW2 = listStemCoOccur2.Sum();
-            
-            //Console.WriteLine("listStemCoOccur2.Sum() = {0}", listStemCoOccur2.Sum());
-            //Console.WriteLine("stemCoOccur2 = {0}", stemCoOccur2);
+            /*
+            Console.WriteLine("sigmaCW2 = {0}", listStemCoOccur2.Sum());
+            Console.WriteLine("stemCoOccur2 = {0}", stemCoOccur2);
+            Console.WriteLine("stemCoOccur2inRelDoc = {0}", stemCoOccur2inRelDoc);*/
             if (sigmaCW2 == 0)
                 factorR = 0;
             else
+                //factorR = Math.Log((double)sigmaCW2 / (1 + stemCoOccur2inRelDoc), 2);
                 factorR = Math.Log((double)sigmaCW2 / (1 + stemCoOccur2), 2);
-           // Console.WriteLine("factorR = {0}", factorR);
+            //Console.WriteLine("factorR = {0}", factorR);
             /*
             foreach (int i in cq.getListPseudoRelDoc()[noQuery])
             {
@@ -919,9 +890,10 @@ namespace InformationRetrieval
                 listProbabilityStemIJ.Add(probabilityWord1And2);
             }*/
             sigmaPCW = CountProbabilityOfDocument(cd, cq, word1, word2, noQuery)  * ((lamda * stemCoOccur2) + (1 - lamda) * stemCoOccur10);
-           
+            //sigmaPCW = CountProbabilityOfDocument(cd, cq, word1, word2, noQuery) * ((lamda * stemCoOccur2inRelDoc) + (1 - lamda) * stemCoOccur10inRelDoc);
             //Console.WriteLine("sigmaPCW = {0}", sigmaPCW);
             double weight = factorR * sigmaPCW;
+            //Console.WriteLine("word 1 = {0}, word 2 = {1}, weight = {2}", word1, word2, weight);
             //edge.setWeight(weight);
             return weight;
             /*
@@ -933,89 +905,18 @@ namespace InformationRetrieval
                     Console.WriteLine("Score Dokumen {0} = {1}", i, cq.getDocumentScore()[i]);
             }*/
         }
-        /*
-        public void CreateProbabilityMatrix(CollectionDocument cd, CollectionDocument cq, int noQuery, int k)
-        {
-            probabilityMatrix = new double[uniqueStemmedWord.Count,uniqueStemmedWord.Count];
-            //Console.WriteLine("listEdgeStem.Count = {0}", listEdgeStem.Count);
-            Console.WriteLine("uniqueStemmedWord.Count = {0}", uniqueStemmedWord.Count);
-            for (int i = 0; i < uniqueStemmedWord.Count; i++)
-            {
-                for(int j = 0; j < uniqueStemmedWord.Count; j++)
-                {
-                    if (i == j)
-                        probabilityMatrix[i,j] = 0;
-                    else
-                    {
-                       /// bool boolValue = false;
-                        Adjacent adj = new Adjacent();
-                        List<Adjacent> listAdj = new List<Adjacent>();
-                        adj.setW1(stem[i].getData());
-                        adj.setW2(stem[j].getData());
-                        adj.setIsAdjacent(true);
-                        //Console.WriteLine("dieu");
-                        listAdj.Add(adj);
-                        //if (cd.listAdjacentDictionary[noQuery].ContainsValue(listAdj))
-                        if (cd.listAdjacentDictionary[noQuery].ContainsValue(listAdj//[k].Contains(adj))
-                        //if (isAdjacent(cd, stem[i].getData(), stem[j].getData(), cq.getListPseudoRelDoc()[noQuery][k]) == true)
-                        {
-                            Console.WriteLine("asup");
-                            for (int m = 0; m < listEdgeStem.Count; m++)
-                            {
-                                if ((listEdgeStem[m].getNoStem1() == i && listEdgeStem[m].getNoStem2() == j) ||
-                                    (listEdgeStem[m].getNoStem1() == j && listEdgeStem[m].getNoStem2() == i))
-                                    probabilityMatrix[i, j] = listEdgeStem[m].getWeight();
-                            }
-                            //      boolValue = true;
-                        }
-                        //for (int k = 0; k < cq.getDocRelFound().Count; k++)
-                        //int k = 0;
-                        //while (boolValue == false)// && (k < cq.getListPseudoRelDoc()[noQuery].Count))
-                        //{
-                        /*
-                        foreach (int k in cq.getListPseudoRelDoc()[noQuery])
-                            {
-                                Console.WriteLine("k = {0}", k);
-                                //List<Adjacent> listAdj = new List<Adjacent>();
-                                adj.setW1(stem[i].getData());
-                                adj.setW2(stem[j].getData());
-                                adj.setIsAdjacent(true);
-                                //Console.WriteLine("dieu");
-                                //listAdj.Add(adj);
-                                //if (cd.listAdjacentDictionary[noQuery].ContainsValue(listAdj))
-                                if (cd.listAdjacentDictionary[noQuery][k].Contains(adj))
-                                //if (isAdjacent(cd, stem[i].getData(), stem[j].getData(), cq.getListPseudoRelDoc()[noQuery][k]) == true)
-                                {
-                                    Console.WriteLine("asup");
-                                    for (int m = 0; m < listEdgeStem.Count; m++)
-                                    {
-                                        if ((listEdgeStem[m].getNoStem1() == i && listEdgeStem[m].getNoStem2() == j) ||
-                                            (listEdgeStem[m].getNoStem1() == j && listEdgeStem[m].getNoStem2() == i))
-                                            probabilityMatrix[i, j] = listEdgeStem[m].getWeight();
-                                    }
-                              //      boolValue = true;
-                                }
-                               // Console.WriteLine("teu asup");
-                                //k++;
-                            //}
-                            //boolValue = true;
-                        }*/
-                     /* 
-                    }
-                    //listEdgeStem[j].getNode1().getData
-                    //if(stem[j].getData()
-                    //probabilityMatrix[i][j] =
-                }
-            }
-           // listEdgeStem
-        }*/
-        public double WeightingEdgeRF(CollectionDocument cd, CollectionDocument cq, Edge<string> edge, string word1, string word2, int noQuery)
+        public double WeightingEdgeRF(CollectionDocument cd, CollectionDocument cq, Edge<string> edge, string word1, string word2, int noQuery, int pseudoRelDoc)
         {
             List<double> listProbabilityStemIJ = new List<double>();
             double lamda = 0.6;
             double sigmaPCW = 0;
+            int stemCoOccur2inRelDoc = 0;
+            int stemCoOccur10inRelDoc = 0;
             CountStemCoOccurrence(cd, cq, word1, word2, noQuery);
+            stemCoOccur2inRelDoc = stemCoOccur2Dict[pseudoRelDoc];
+            stemCoOccur10inRelDoc = stemCoOccur10Dict[pseudoRelDoc];
             sigmaPCW = CountProbabilityOfDocument(cd, cq, word1, word2, noQuery) * ((lamda * stemCoOccur2) + (1 - lamda) * stemCoOccur10);
+            //sigmaPCW = CountProbabilityOfDocument(cd, cq, word1, word2, noQuery) * ((lamda * stemCoOccur2inRelDoc) + (1 - lamda) * stemCoOccur10inRelDoc);
             double weight = sigmaPCW;
             return weight;
         }
@@ -1028,7 +929,7 @@ namespace InformationRetrieval
             // df(w(n)) = number of documents in C containing w(n)
             //compute frequency of word in N
             int nWord = frequencyWordInN(word, cd, cq, noQuery);
-            double wNFAvg = ((double)nWord / cq.getListPseudoRelDoc()[noQuery].Count) / MaximumAverageFrequencyinN(cq, cd, noQuery);
+            double wNFAvg = /*affinityScoreTerm[word] */ ((double)nWord / cq.getListPseudoRelDoc()[noQuery].Count) / MaximumAverageFrequencyinN(cq, cd, noQuery); // dikali score atau ngga / ditambah?
             int C = ComputeNUniqueStemmedWordinDoc(cd);
             int dfWn;
             if (cd.getDf().ContainsKey(word))
@@ -1038,6 +939,8 @@ namespace InformationRetrieval
             //int C = uniqueStemmedWord.Count;
             //int dfWn = dfNew[word];
             double IDFWn = Math.Log((double)C / (1 + dfWn), 2);
+            //Console.WriteLine("noQuery = {0}", noQuery);
+            //Console.WriteLine("IDFWn = {0}", IDFWn);
             double sWn = wNFAvg * IDFWn;
             return sWn;
         }
@@ -1058,95 +961,136 @@ namespace InformationRetrieval
             //phi(j) indicates importance of stem in query context
             //Iteration of the walk ceases when difference in score at any vertex doesn't exceed 0.0001
             double[,] matrixPhiJT = new double[1, stem.Length];
-            for (int ind = 0; ind < stem.Length; ind++)
-                matrixPhiJT[0, ind] = 0;
+            double[,] dotResult = new double[1, stem.Length];
+            double[,] dotProbMatrix = new double[stem.Length, stem.Length];
             arrPhiJTPlus1 = new double[stem.Length];
+            for (int ind = 0; ind < stem.Length; ind++)
+            {
+                dotResult[0, ind] = 0;
+                arrPhiJTPlus1[ind] = 0;
+            }
             arrPhiJTPlus1Query = new Dictionary<string, double>();
+            //double alfa = 0.85;
+            //double u = (double)1 / stem.Length;
             double sigmaPhiIHIJ;
+            double[] tempSigmaPhiIHIJ = new double[stem.Length];
             int t = 0;
             bool isExceed = true;
+            bool isInfinite = false;
             // pada t = 0
+            //using (StreamWriter sw = File.AppendText(@"C: \Users\Mochamad Lutfi F\Documents\Visual Studio 2015\Projects\ConsoleApplication11\output\Query\PHIJt.txt"))
+            //  sw.WriteLine("t = {0}", t);
             for (int i = 0; i < stem.Length; i++)
             {
-                int k = 0;
                 sigmaPhiIHIJ = 0;
-                while (k < stem.Length)
+                matrixPhiJT[0, i] = 1;
+                dotResult[0, i] = 0;
+                for (int k = 0; k <stem.Length; k++)
                 {
-                    matrixPhiJT[0, k] = 1; //edge weights are normalized to sum to one
-                    //Console.WriteLine("probabilityMatrix[k, i] = {0}", probabilityMatrix[k, i]);
-                    sigmaPhiIHIJ += matrixPhiJT[0, k] * probabilityMatrix[k, i];
-                    matrixPhiJT[0, k] = 0;
-                    k++;
+                    dotProbMatrix[k, i] = probabilityMatrix[k, i];
+                    //dotProbMatrix[k, i] += probabilityMatrix[k, i];
+                    //dotResult[0, i] +=  probabilityMatrix[k, i];
+                    dotResult[0, i] += matrixPhiJT[0,k]*probabilityMatrix[k, i];
                 }
-                //Console.WriteLine(sigmaPhiIHIJ);
-                arrPhiJTPlus1[i] = sigmaPhiIHIJ;
-                matrixPhiJT[0, i] = sigmaPhiIHIJ;
+                arrPhiJTPlus1[i] = dotResult[0, i];
                 if (queryStemmedWord.Contains(stem[i].getData()))
-                {
-                    //Console.WriteLine("oy");
                     arrPhiJTPlus1Query.Add(stem[i].getData(), arrPhiJTPlus1[i]);
-                }
+                //using (StreamWriter sw = File.AppendText(@"C: \Users\Mochamad Lutfi F\Documents\Visual Studio 2015\Projects\ConsoleApplication11\output\Query\PhiJt.txt"))
+                  //  sw.WriteLine("arrPhiJTPlus1[{0}] = {1}", i, arrPhiJTPlus1[i]);
             }
-           // PrintAffinityScore();
-            t = 1;
-            while (isExceed)
+            while (isExceed && !isInfinite && t<500)
             {
+                for (int ia = 0; ia < stem.Length; ia++)
+                {
+                    for (int ib = 0; ib < stem.Length; ib++)
+                    {
+                        double temp = 0;
+                        for (int ic = 0; ic < stem.Length; ic++)
+                            temp+= dotProbMatrix[ia, ic] * dotProbMatrix[ib, ic];
+                        dotProbMatrix[ia, ib] = temp;
+                    }
+                }
+                double minusInfinity = -1.0 / 0.0;
                 //Console.WriteLine("t = {0}", t);
-                //Console.WriteLine("t = {0}", t);
+                t++;
+                //using (StreamWriter sw = File.AppendText(@"C: \Users\Mochamad Lutfi F\Documents\Visual Studio 2015\Projects\ConsoleApplication11\output\Query\PHIJt.txt"))
+                 //   sw.WriteLine("t = {0}", t);
                 for (int i = 0; i < stem.Length; i++)
                 {
                     int k = 0;
-                    sigmaPhiIHIJ = 0;
+                    tempSigmaPhiIHIJ[i] = arrPhiJTPlus1[i];
+                    dotResult[0, i] = 0;
                     while (k < stem.Length)
                     {
-                       // Console.WriteLine("probabilityMatrix[{0}, {1}] = {2}", k, i, probabilityMatrix[k, i]);
-                        //matrixPhiJT[0, k] = 1; //edge weights are normalized to sum to one
-                        sigmaPhiIHIJ += matrixPhiJT[0, k] * probabilityMatrix[k, i];
-                        //matrixPhiJT[0, k] = 0;
+                        dotResult[0, i] += dotProbMatrix[k, i];
                         k++;
                     }
-                    arrPhiJTPlus1[i] = sigmaPhiIHIJ;
-                    //Console.WriteLine("sigmaPhiIHIJ = {0}", sigmaPhiIHIJ);
-                    matrixPhiJT[0, i] = sigmaPhiIHIJ;
-                    if (queryStemmedWord.Contains(stem[i].getData()))
+                    sigmaPhiIHIJ = dotResult[0, i];
+                    if (!Double.IsInfinity(sigmaPhiIHIJ) && sigmaPhiIHIJ != minusInfinity && !Double.IsNaN(sigmaPhiIHIJ))
                     {
-                        //Console.WriteLine("iiy");
-                        if (arrPhiJTPlus1Query.ContainsKey(stem[i].getData()))
-                            arrPhiJTPlus1Query.Remove(stem[i].getData());
-                        arrPhiJTPlus1Query.Add(stem[i].getData(), arrPhiJTPlus1[i]);
-                    }
-                }
-                //MakeArrPhiJTPlus1Positive();
-                isExceed = false;
-                int j = 0;
-                for (int i = 0; i < arrPhiJTPlus1.Length; i++)
-                {
-                    while (j < arrPhiJTPlus1.Length)
-                    {
-                        if (Math.Abs(arrPhiJTPlus1[i] - arrPhiJTPlus1[j]) > 0.0001) 
+                        arrPhiJTPlus1[i] = sigmaPhiIHIJ;
+                        //using (StreamWriter sw = File.AppendText(@"C: \Users\Mochamad Lutfi F\Documents\Visual Studio 2015\Projects\ConsoleApplication11\output\Query\PHIJt.txt"))
+                          //sw.WriteLine("arrPhiJTPlus1[{0}] = {1}", i, arrPhiJTPlus1[i]);
+                        if (queryStemmedWord.Contains(stem[i].getData()))
                         {
-                            isExceed = true;
-                            break;
+                            if (arrPhiJTPlus1Query.ContainsKey(stem[i].getData()))
+                                arrPhiJTPlus1Query.Remove(stem[i].getData());
+                            arrPhiJTPlus1Query.Add(stem[i].getData(), arrPhiJTPlus1[i]);
                         }
-                        j++;
                     }
-
-                    if (j == arrPhiJTPlus1.Length)
-                        j = 0;
+                    else
+                    {
+                        for (int p = 0; p < stem.Length; p++)
+                        {
+                            arrPhiJTPlus1[p] = tempSigmaPhiIHIJ[p];
+                            if (queryStemmedWord.Contains(stem[p].getData()))
+                            {
+                                if (arrPhiJTPlus1Query.ContainsKey(stem[p].getData()))
+                                    arrPhiJTPlus1Query.Remove(stem[p].getData());
+                                arrPhiJTPlus1Query.Add(stem[p].getData(), arrPhiJTPlus1[p]);
+                            }
+                        }
+                        isInfinite = true;
+                    }
+                    if (isInfinite)
+                        break;
                 }
-                //isExceed = false;
-                // Console.WriteLine("nNotExceed = {0}", nNotExceed);
-                // if (nNotExceed < stem.Length)
-                //   nNotExceed = 0;
-                t++;
+                int j = 0;
+                if (!isInfinite)
+                {
+                    isExceed = false;
+                    for (int i = 0; i < arrPhiJTPlus1.Length; i++)
+                    {
+                        while (j < arrPhiJTPlus1.Length)
+                        {
+                            if (Math.Abs(arrPhiJTPlus1[i] - arrPhiJTPlus1[j]) > 0.0001)
+                            {
+                                isExceed = true;
+                                break;
+                            }
+                            j++;
+                            if (isExceed == true)
+                                break;
+                        }
+                        if (isExceed == true)
+                            break;
+                        if (j == arrPhiJTPlus1.Length)
+                            j = 0;
+                    }
+                }
+                else
+                    break;
             }
-            //Console.WriteLine("t = {0}", t);
+            //using (StreamWriter sw = File.AppendText(@"C: \Users\Mochamad Lutfi F\Documents\Visual Studio 2015\Projects\ConsoleApplication11\output\Query\PHIJt.txt"))
+              //  sw.WriteLine("t = {0}", t);
+            //Console.WriteLine("t = {0}", t); // t = 2 -> affinity score = 0 semua, t ratusan 300,700 -> NaN
             MakeAffinityScoreDictionary();
             MakeAffinityQueryScoreDictionary();
-            //PrintAffinityScore();
-        }
+        }    
         public void MakeWeightVertexAsAffinityScore()
         {
+            affinityScoreTerm.Clear();
+            affinityScoreTermQuery.Clear();
             arrPhiJTPlus1 = new double[stem.Length];
             arrPhiJTPlus1Query = new Dictionary<string, double>();
             for (int i=0; i < stem.Length; i++)
@@ -1158,8 +1102,33 @@ namespace InformationRetrieval
             MakeAffinityScoreDictionary();
             MakeAffinityQueryScoreDictionary();
         }
+        public void CombineFactorSToVertexWeight()
+        {
+            double minusInfinity = -1.0 / 0.0;
+            for (int i = 0; i < stem.Length; i++)
+            {
+                affinityScoreTerm.Remove(stem[i].getData());
+                affinityScoreTermQuery.Remove(stem[i].getData());
+                arrPhiJTPlus1[i] = arrPhiJTPlus1[i] + stem[i].getWeight(); // ga tau bener apa ngga -> combine ditambah apa dikali?
+                if (queryStemmedWord.Contains(stem[i].getData()))
+                {
+                    //Console.WriteLine("iiy");
+                    if (arrPhiJTPlus1Query.ContainsKey(stem[i].getData()))
+                        arrPhiJTPlus1Query.Remove(stem[i].getData());
+                    //if((!Double.IsInfinity(arrPhiJTPlus1[i]) && arrPhiJTPlus1[i] != minusInfinity))
+                    arrPhiJTPlus1Query.Add(stem[i].getData(), arrPhiJTPlus1[i]);
+                }
+            }
+            MakeAffinityScoreDictionary();
+            MakeAffinityQueryScoreDictionary();
+        }
         public void MakeCandidateTerm()
         {
+            /*
+            foreach (var item in arrPhiJTPlus1Query.Where(kvp => kvp.Value == 0).ToList())
+            {
+                arrPhiJTPlus1Query.Remove(item.Key);
+            }*/
             var arrPhiJTPlus1QueryRanked = (from pair in arrPhiJTPlus1Query orderby pair.Value descending select pair).ToList();
             foreach (KeyValuePair<string, double> kvp in arrPhiJTPlus1QueryRanked)
             {
@@ -1240,6 +1209,11 @@ namespace InformationRetrieval
         }
         public void Make6CandidateTerm()
         {
+            /*
+            foreach (var item in arrPhiJTPlus1Query.Where(kvp => kvp.Value == 0).ToList())
+            {
+                arrPhiJTPlus1Query.Remove(item.Key);
+            }*/
             var arrPhiJTPlus1QueryRanked = (from pair in arrPhiJTPlus1Query orderby pair.Value descending select pair).ToList();
             foreach (KeyValuePair<string, double> kvp in arrPhiJTPlus1QueryRanked)
             {
@@ -1657,24 +1631,39 @@ namespace InformationRetrieval
         }
         public void MakeAffinityScoreDictionary()
         {
-            for(int i=0; i<stem.Length;i++)
-                affinityScoreTerm.Add(stem[i].getData(), arrPhiJTPlus1[i]);
-        }
-        public void WriteRankedAffinityScoreDictionary(int noQuery)
-        {
-            var arrPhiJTPlus1QueryRanked = (from pair in arrPhiJTPlus1Query orderby pair.Value descending select pair).ToList();
-            using (StreamWriter sw = File.AppendText(@"C: \Users\Mochamad Lutfi F\Documents\Visual Studio 2015\Projects\ConsoleApplication11\output\Query\Ranked Affinity Score.txt"))
+            for (int i = 0; i < stem.Length; i++)
             {
-                sw.WriteLine("Nomor Query = {0}", noQuery);
-                foreach (KeyValuePair<string, double> kvp in arrPhiJTPlus1QueryRanked)
-                    sw.WriteLine("Node {0} | Affinity Score = {1}", kvp.Key, kvp.Value);
+                //Console.WriteLine("arrPhiJTPlus1[{0}] = {1}", i, arrPhiJTPlus1[i]);
+                affinityScoreTerm.Add(stem[i].getData(), arrPhiJTPlus1[i]);
             }
         }
         public void MakeAffinityQueryScoreDictionary()
         {
             for (int i = 0; i < queryStemmedWord.Count; i++)
-                affinityScoreTermQuery.Add(queryStemmedWord[i], arrPhiJTPlus1Query[queryStemmedWord[i]]);
+            {
+                if (arrPhiJTPlus1Query.ContainsKey(queryStemmedWord[i]))
+                {
+                   // if (arrPhiJTPlus1Query[queryStemmedWord[i]] == 0) { }
+                    //else
+                        affinityScoreTermQuery.Add(queryStemmedWord[i], arrPhiJTPlus1Query[queryStemmedWord[i]]);
+                }
+            }
         }
+        public void WriteRankedAffinityScoreQueryDictionary(int noQuery)
+        {
+            /*
+            foreach (var item in arrPhiJTPlus1Query.Where(kvp => kvp.Value == 0).ToList())
+            {
+                arrPhiJTPlus1Query.Remove(item.Key);
+            }*/
+            var arrPhiJTPlus1QueryRanked = (from pair in arrPhiJTPlus1Query orderby pair.Value descending select pair).ToList();
+            using (StreamWriter sw = File.AppendText(@"C: \Users\Mochamad Lutfi F\Documents\Visual Studio 2015\Projects\ConsoleApplication11\output\Query\Ranked Affinity Query Score.txt"))
+            {
+                sw.WriteLine("Nomor Query = {0}", noQuery);
+                foreach (KeyValuePair<string, double> kvp in arrPhiJTPlus1QueryRanked)
+                    sw.WriteLine("Node {0} | Affinity Score = {1}", kvp.Key, kvp.Value);
+            }
+        }   
         public void PrintWeightEdge()
         {
             int j = 1;

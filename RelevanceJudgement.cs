@@ -21,18 +21,47 @@ namespace InformationRetrieval
             //string[] relevanceJudgment = File.ReadAllLines(@"C:\Users\Mochamad Lutfi F\Documents\Visual Studio 2015\Projects\ConsoleApplication11\test collection\NPL\QRELSACA");
             string[] rlj;
             List<string[]> listRlj = new List<string[]>();
-            foreach (string s in relevanceJudgement)
+
+            if (fileName == @"C:\Users\Mochamad Lutfi F\Documents\Visual Studio 2015\Projects\ConsoleApplication11\test collection\TEMPO\tempo.qrel")
             {
-                rlj = new string[2];
-                rlj = s.Split((char[])null, StringSplitOptions.RemoveEmptyEntries);
-                //Console.WriteLine(rlj[0]);
-                //Console.WriteLine(rlj[1]);
-                string[] rld = new string[2];
-                rld[0] = rlj[0];
-                rld[1] = rlj[1];
-                //Console.WriteLine(rld[0]);
-                //Console.WriteLine(rld[1]);
-                listRlj.Add(rld);
+                foreach (string s in relevanceJudgement)
+                {
+                    rlj = new string[2];
+                    rlj = s.Split((char[])null, StringSplitOptions.RemoveEmptyEntries);
+                    //Console.WriteLine(rlj[0]);
+                    //Console.WriteLine(rlj[1]);
+                    string[] rld = new string[2];
+                    rld[0] = rlj[0];
+                    foreach (KeyValuePair<int, string> kvp in cq.getNoDocTempo())
+                    {
+                        if (kvp.Value == rlj[1])
+                        {
+                            rld[1] = kvp.Key.ToString();
+                            //Console.WriteLine("rld[1] = {0}", rld[1]);
+                            break;
+                        }
+                    }
+                    //rld[1] = rlj[1];
+                    //Console.WriteLine(rld[0]);
+                    //Console.WriteLine(rld[1]);
+                    listRlj.Add(rld);
+                }
+            }
+            else
+            {
+                foreach (string s in relevanceJudgement)
+                {
+                    rlj = new string[2];
+                    rlj = s.Split((char[])null, StringSplitOptions.RemoveEmptyEntries);
+                    //Console.WriteLine(rlj[0]);
+                    //Console.WriteLine(rlj[1]);
+                    string[] rld = new string[2];
+                    rld[0] = rlj[0];
+                    rld[1] = rlj[1];
+                    //Console.WriteLine(rld[0]);
+                    //Console.WriteLine(rld[1]);
+                    listRlj.Add(rld);
+                }
             }
             //Console.WriteLine("listRlj.Count = {0}", listRlj.Count);
             
@@ -44,6 +73,8 @@ namespace InformationRetrieval
             {
                 if (!cq.getRld().ContainsKey(Int32.Parse(listRlj[i][0])))
                     cq.getRld().Add(Int32.Parse(listRlj[i][0]), new List<int>());
+                //Console.WriteLine("Int32.Parse(listRlj[i][0]) = {0}", Int32.Parse(listRlj[i][0]));
+                //Console.WriteLine("Int32.Parse(listRlj[i][1]) = {0}", Int32.Parse(listRlj[i][1]));
                 cq.getRld()[Int32.Parse(listRlj[i][0])].Add(Int32.Parse(listRlj[i][1]));
             }
             //PrintRld(cq);

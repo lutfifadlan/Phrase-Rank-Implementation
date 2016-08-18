@@ -32,11 +32,12 @@ namespace InformationRetrieval
     }
     public class CollectionDocument
     {
-        private Dictionary<int, string> word = new Dictionary<int, string>();
+        private Dictionary<int, string> word = new Dictionary<int, string>();//Dictionary<int, string>();
         private SortedDictionary<int, string> wordDictStopped = new SortedDictionary<int, string>();
         private SortedDictionary<int, string> queryDictStopped = new SortedDictionary<int, string>();
         private SortedDictionary<int, string> wordDictStemmed = new SortedDictionary<int, string>();
         private SortedDictionary<int, string> queryStemmed = new SortedDictionary<int, string>();
+        private SortedDictionary<int, string> noDocTempo = new SortedDictionary<int, string>();
         private SortedDictionary<int, List<int>> rld = new SortedDictionary<int, List<int>>();
         private SortedDictionary<int, string> term = new SortedDictionary<int, string>(); // list term pada dokumen
         private SortedDictionary<int, string> termQuery = new SortedDictionary<int, string>(); // list term pada query
@@ -105,6 +106,8 @@ namespace InformationRetrieval
         private Dictionary<int, double> docRelevantPrecision = new Dictionary<int, double>();
         private Dictionary<int, List<int>> listPseudoRelDoc = new Dictionary<int, List<int>>();
         private Dictionary<int, List<double>> dictListTFIDFQ = new Dictionary<int, List<double>>();
+        private SortedDictionary<int, List<Adjacent>> adjacentDocument = new SortedDictionary<int, List<Adjacent>>();
+        private SortedDictionary<int, List<Adjacent>> adjacentQuery = new SortedDictionary<int, List<Adjacent>>();
         private List<int> listPseudoRelDocWithoutQ = new List<int>();
         private int currentKey = 0;
         private int nTuple = 0;
@@ -126,6 +129,7 @@ namespace InformationRetrieval
         public SortedDictionary<int, string> getQueryDictStopped() { return queryDictStopped; }
         public SortedDictionary<int, string> getWordDictStemmed() { return wordDictStemmed; }
         public SortedDictionary<int, string> getQueryStemmed() { return queryStemmed; }
+        public SortedDictionary<int, string> getNoDocTempo() { return noDocTempo; }
         public SortedDictionary<int, List<int>> getRld() { return rld; }
         public SortedDictionary<int, string> getTerm() { return term; }
         public SortedDictionary<int, string> getTermQuery() { return termQuery; }
@@ -200,6 +204,8 @@ namespace InformationRetrieval
         public Dictionary<int, double> getDocRelevantPrecision() {return docRelevantPrecision; }
         public Dictionary<int, List<int>> getListPseudoRelDoc() { return listPseudoRelDoc; }
         public List<int> getListPseudoRelDocWithoutQ() { return listPseudoRelDocWithoutQ; }
+        public SortedDictionary<int, List<Adjacent>> getAdjacentDocument() { return adjacentDocument; }
+        public SortedDictionary<int, List<Adjacent>> getAdjacentQuery() { return adjacentQuery; }
         //public Dictionary<int, List<Adjacent>>[] getListAdjacentDictionary() { return listAdjacentDictionary; }
         public int getCurrentKey() { return currentKey; }
         public int getNTuple() { return nTuple; }
@@ -256,174 +262,6 @@ namespace InformationRetrieval
             //Form1 Form = new Form1();
             //Form.Show();
             //Form.Close();
-            /*
-            CollectionDocument collDoc = new CollectionDocument();
-            CollectionDocument collQuery = new CollectionDocument();
-            CollectionDocument collReformulatedQuery = new CollectionDocument();
-            SaveCollection saveColl = new SaveCollection();
-            StemmingCollection stemColl = new StemmingCollection();
-            RemoveStopWords removeStop = new RemoveStopWords();
-            RelevanceJudgement relJudge = new RelevanceJudgement();
-            Indexing indexer = new Indexing();
-            SavePositionStemmedWord positioningTerm = new SavePositionStemmedWord();
-            SaveIndexingToFile saveIndexing = new SaveIndexingToFile();
-            Weighting weightCollection = new Weighting();
-            ComputingTFIDF computeTFIDF = new ComputingTFIDF();
-            ComputingNormalizationFactor computeNormalizationFactor = new ComputingNormalizationFactor();
-            ComputingTFIDFNormalized computeTFIDFNormalized = new ComputingTFIDFNormalized();
-            InvertedFileIndex invertedFile = new InvertedFileIndex();
-            RetrieveCollection retrieval = new RetrieveCollection();
-            ScoringDocument scoring = new ScoringDocument();
-            EvaluatingCollection evaluation = new EvaluatingCollection();
-            RelevanceFeedback relFeedBack = new RelevanceFeedback();
-            Is2WordAdjacent isAdj = new Is2WordAdjacent();
-            PhraseRank phRank = new PhraseRank();
-            List<double> allRecallRetrieval = new List<double>();
-            List<double> allPrecisionRetrieval = new List<double>();
-            List<double> allInterpolatedAveragePrecision = new List<double>();
-            List<double> allNonInterpolatedAveragePrecision = new List<double>();
-            collDoc.setWord(0, null);
-            collQuery.setWord(0, null);
-            //saveColl.SaveDocumentCollection(collDoc); // Menyimpan koleksi dokumen
-            saveColl.SaveQueryCollection(collQuery); // Menyimpan kumpulan query
-            removeStop.RemoveStopWordDocumentDictionary(collDoc);
-            removeStop.RemoveStopWordQueryDictionary(collQuery);
-            relJudge.InputRelevanceJudgement(collQuery);
-            stemColl.StemmingDocument(collDoc);
-            stemColl.StemmingQuery(collQuery);
-            indexer.IndexingDocument(collDoc);
-            positioningTerm.CreatePositionDocument(collDoc);
-            saveIndexing.SaveDocumentIndexingToFile(collDoc);
-            indexer.IndexingQuery(collQuery);
-            positioningTerm.CreatePositionQuery(collQuery);
-            saveIndexing.SaveQueryIndexingToFile(collQuery);
-            weightCollection.WeightingDocument(collDoc);
-            weightCollection.WeightingQuery(collQuery); 
-            computeTFIDF.ComputeTFIDFperDocument(collDoc);
-            computeTFIDF.ComputeTFIDFperQuery(collQuery);
-            computeNormalizationFactor.ComputeNormalizeFactorDocument(collDoc);
-            computeNormalizationFactor.ComputeNormalizeFactorQuery(collQuery);
-            computeTFIDFNormalized.NormalizeTFFIDFDocumentperTerm(collDoc);
-            computeTFIDFNormalized.NormalizeTFFIDFQueryperTerm(collQuery);
-            invertedFile.MakeInvertedFileIndexDocument(collDoc);
-            invertedFile.MakeInvertedFileIndexQuery(collQuery);
-            invertedFile.MakeInvertedFileIndexDocumentNormalized(collDoc);
-            invertedFile.MakeInvertedFileIndexQueryNormalized(collQuery);*/
-
-            //for (int i = 1; i<=collQuery.getNTuple(); i++)
-            /*
-            foreach(KeyValuePair<int, string[]>kvp in collQuery.getTermQueryID())
-            {
-                Console.WriteLine("Query = {0}", kvp.Key);
-                retrieval.Retrieval(collDoc, collQuery, kvp.Key);
-                //Console.WriteLine("edan");
-                weightCollection.MakeWeightQueryToList(collQuery, kvp.Key);
-                scoring.ScoringAllDocumentRetrieved(collDoc, collQuery, kvp.Key);
-                //Console.WriteLine("Score Dokumen {0}", i);
-                //scoring.PrintAllRetrievalResult(collQuery);
-                evaluation.Evaluation(collQuery);
-                allRecallRetrieval.Add(collQuery.getRecallRetrieval());
-                allPrecisionRetrieval.Add(collQuery.getPrecisionRetrieval());
-                allInterpolatedAveragePrecision.Add(collQuery.getInterpolatedAveragePrecision());
-                allNonInterpolatedAveragePrecision.Add(collQuery.getNonInterpolatedAveragePrecision());
-                //Console.WriteLine("yeah");
-            }
-            Console.WriteLine("Hasil Convensional Information Retrieval");
-            Console.WriteLine("Average Recall Query Collection = {0}", (double)allRecallRetrieval.Sum() / (double)collQuery.getTermQueryID().Count);
-            Console.WriteLine("Average Precision Query Collection = {0}", (double)allPrecisionRetrieval.Sum() / (double)collQuery.getTermQueryID().Count);
-            Console.WriteLine("Average Interpolated Average Precision Query Collection = {0}", (double)allInterpolatedAveragePrecision.Sum() / (double)collQuery.getTermQueryID().Count);
-            Console.WriteLine("Average Non Interpolated Average Precision Query Collection = {0}", (double)allNonInterpolatedAveragePrecision.Sum() / (double)collQuery.getTermQueryID().Count);
-            allRecallRetrieval.Clear();
-            allPrecisionRetrieval.Clear();
-            allInterpolatedAveragePrecision.Clear();
-            allNonInterpolatedAveragePrecision.Clear();
-            collQuery.getListNoQueryDocFound().Clear();
-            */
-            // Pseudo Relevance Feedback
-            //for (int i = 1; i <= collQuery.getNTuple(); i++)
-            /*
-            foreach (KeyValuePair<int, string[]> kvp in collQuery.getTermQueryID())
-            {
-                Console.WriteLine("Query = {0}", kvp.Key);
-                retrieval.Retrieval(collDoc, collQuery, kvp.Key);
-                //relFeedBack.FeedbackRelevantDocument(collQuery, i);
-                //relFeedBack.PseudoRelevantDocument(collQuery);
-                relFeedBack.RochioQuery(collQuery);
-                weightCollection.MakeWeightQueryToList(collQuery, kvp.Key);
-                scoring.ScoringAllDocumentRetrieved(collDoc, collQuery, kvp.Key); // Ranking semua dokumen berdasarkan skor
-                relFeedBack.PseudoRelevantDocument(collQuery);
-                // foreach (int j in collQuery.getDocRelFound())
-                //   Console.WriteLine("Dokumen = {0}", j);
-                if (!collQuery.getListPseudoRelDoc().ContainsKey(kvp.Key))
-                    collQuery.getListPseudoRelDoc().Add(kvp.Key, new List<int>());
-                foreach(int j in collQuery.getDocRelFound())
-                    collQuery.getListPseudoRelDoc()[kvp.Key].Add(j);
-                evaluation.Evaluation(collQuery);
-                allRecallRetrieval.Add(collQuery.getRecallRetrieval());
-                allPrecisionRetrieval.Add(collQuery.getPrecisionRetrieval());
-                allInterpolatedAveragePrecision.Add(collQuery.getInterpolatedAveragePrecision());
-                allNonInterpolatedAveragePrecision.Add(collQuery.getNonInterpolatedAveragePrecision());
-              //  collQuery.PrintEvaluation(collQuery, i);
-                // buat top k document dengan priority queue - > heap
-            }
-            
-            Console.WriteLine();
-            Console.WriteLine("Hasil Pseudo Relevance Feedback");
-            Console.WriteLine("Average Recall Query Collection = {0}", (double)allRecallRetrieval.Sum() / (double)collQuery.getNTuple());
-            Console.WriteLine("Average Precision Query Collection = {0}", (double)allPrecisionRetrieval.Sum() / (double)collQuery.getNTuple());
-            Console.WriteLine("Average Interpolated Average Precision Query Collection = {0}", (double)allInterpolatedAveragePrecision.Sum() / (double)collQuery.getNTuple());
-            Console.WriteLine("Average Non Interpolated Average Precision Query Collection = {0}", (double)allNonInterpolatedAveragePrecision.Sum() / (double)collQuery.getNTuple());
-            
-            allRecallRetrieval.Clear();
-            allPrecisionRetrieval.Clear();
-            allInterpolatedAveragePrecision.Clear();
-            allNonInterpolatedAveragePrecision.Clear();
-
-            //phRank.PrintDocRel(collQuery, i);
-            collQuery.getListNoQueryDocFound().Clear();
-            //int noQuery = 2;
-            //phRank.PrintDocRel(collQuery);
-            isAdj.isWordAdjacent(collDoc, collQuery);
-
-            */
-            //Phrase Rank
-            /*
-            List<int> listNoQuery = new List<int>();
-            foreach (KeyValuePair<int, string[]> pair in collQuery.getTermQueryID())
-                listNoQuery.Add(pair.Key);
-
-            Console.WriteLine("PhRank algorithm");
-            //for (int i = 1; i <= collQuery.getNTuple(); i++)
-            //foreach(KeyValuePair<int, string[]> kvp in collQuery.getTermQueryID()) -> di ubah pas phase rank
-            foreach(int i in listNoQuery)
-            {
-                Console.WriteLine("Query = {0}", i);
-                phRank.PhRankAlgorithm(collDoc, collQuery, i);
-            }
-            collQuery.getListNoQueryDocFound().Clear();
-            //phRank.PhRankAlgorithm(collDoc, collQuery, noQuery);
-            //for (int i = 1; i <= collQuery.getNTuple(); i++)
-            foreach (KeyValuePair<int, string[]> kvp in collQuery.getTermQueryID())
-            {
-                retrieval.Retrieval(collDoc, collQuery, kvp.Key);
-                weightCollection.MakeWeightQueryToList(collQuery, kvp.Key);
-                scoring.ScoringAllDocumentRetrieved(collDoc, collQuery, kvp.Key);
-                //Console.WriteLine("Score Dokumen {0}", i);
-                //scoring.PrintAllRetrievalResult(collQuery);
-                evaluation.Evaluation(collQuery);
-                allRecallRetrieval.Add(collQuery.getRecallRetrieval());
-                allPrecisionRetrieval.Add(collQuery.getPrecisionRetrieval());
-                allInterpolatedAveragePrecision.Add(collQuery.getInterpolatedAveragePrecision());
-                allNonInterpolatedAveragePrecision.Add(collQuery.getNonInterpolatedAveragePrecision());
-            }
-            Console.WriteLine();
-            Console.WriteLine("Hasil Reformulasi Query dengan PhRank");
-            Console.WriteLine("Average Recall Query Collection = {0}", (double)allRecallRetrieval.Sum() / (double)collQuery.getNTuple());
-            Console.WriteLine("Average Precision Query Collection = {0}", (double)allPrecisionRetrieval.Sum() / (double)collQuery.getNTuple());
-            Console.WriteLine("Average Interpolated Average Precision Query Collection = {0}", (double)allInterpolatedAveragePrecision.Sum() / (double)collQuery.getNTuple());
-            Console.WriteLine("Average Non Interpolated Average Precision Query Collection = {0}", (double)allNonInterpolatedAveragePrecision.Sum() / (double)collQuery.getNTuple());
-            */
-            //Close Main
         }
     }            
 }

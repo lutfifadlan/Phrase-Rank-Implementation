@@ -35,7 +35,7 @@ namespace InformationRetrieval
                 }
             }
         }
-        public void ComputeTFIDFperQuery(CollectionDocument cd)
+        public void ComputeTFIDFperQuery(CollectionDocument cd, CollectionDocument cdd)
         {
             cd.TFIDFperQuery = new Dictionary<string, double>[cd.getNTuple() + 1];
             cd.TFIDFperQuery[0] = null;
@@ -45,8 +45,13 @@ namespace InformationRetrieval
                 cd.TFIDFperQuery[kvp.Key] = new Dictionary<string, double>();
                 foreach (KeyValuePair<string, int> mvp in cd.getNoQueryTermTF()[kvp.Key])
                 {
+                    /*
                     if (cd.getIDFQuery().ContainsKey(mvp.Key))
                         cd.TFIDFperQuery[kvp.Key].Add(mvp.Key, (mvp.Value * cd.getIDFQuery()[mvp.Key]));
+                    else
+                        cd.TFIDFperQuery[kvp.Key].Add(mvp.Key, (mvp.Value * 0));*/
+                    if(cdd.getIDF().ContainsKey(mvp.Key))
+                        cd.TFIDFperQuery[kvp.Key].Add(mvp.Key, (mvp.Value * cdd.getIDF()[mvp.Key]));
                     else
                         cd.TFIDFperQuery[kvp.Key].Add(mvp.Key, (mvp.Value * 0));
                 }

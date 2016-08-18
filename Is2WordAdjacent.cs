@@ -43,5 +43,52 @@ namespace InformationRetrieval
                 
             }
         }
+        public void isWordDocumentAdjacent(CollectionDocument cd)
+        {
+            string s1, s2;
+            foreach (KeyValuePair<int, string[]> vp in cd.getTermDocID())
+            {
+                List<Adjacent> listAdj = new List<Adjacent>();
+                for (int k = 0; k < vp.Value.Length; k++)//cd.getTermDocID()[j].Length; k++)
+                {
+                    if (k == (vp.Value.Length - 1)) { }//cd.getTermDocID()[j].Length - 1) { }
+                    else
+                    {
+                        Adjacent adj = new Adjacent();
+                        s1 = vp.Value[k];//cd.getTermDocID()[j][k];
+                        s2 = vp.Value[k + 1];//cd.getTermDocID()[j][k + 1];
+                        adj.setW1(s1);
+                        adj.setW2(s2);
+                        adj.setIsAdjacent(true);
+                        listAdj.Add(adj);
+                    }
+                }
+                cd.getAdjacentDocument().Add(vp.Key, listAdj);//j, listAdj);
+            }
+        }
+        public void isWordQueryAdjacent(CollectionDocument cq)
+        {
+            string s1, s2;
+            foreach (KeyValuePair<int, string[]> vp in cq.getTermQueryID())
+            {
+                List<Adjacent> listAdj = new List<Adjacent>();
+                for (int k = 0; k < vp.Value.Length; k++)//cd.getTermDocID()[j].Length; k++)
+                {
+                    if (k == (vp.Value.Length - 1)) { }//cd.getTermDocID()[j].Length - 1) { }
+                    else
+                    {
+                        Adjacent adj = new Adjacent();
+                        s1 = vp.Value[k];//cd.getTermDocID()[j][k];
+                        s2 = vp.Value[k + 1];//cd.getTermDocID()[j][k + 1];
+                        adj.setW1(s1);
+                        adj.setW2(s2);
+                        adj.setIsAdjacent(true);
+                        listAdj.Add(adj);
+                    }
+                }
+                cq.getAdjacentQuery().Add(vp.Key, listAdj);//j, listAdj);
+            }
+        }
+
     }
 }
