@@ -23,6 +23,7 @@ namespace InformationRetrieval
 
             index = 1;
             //for (int i = 1; i <= cd.getTermDocID().Count; i++)
+            /*
             foreach(KeyValuePair<int, string> kvp in cd.getWordDictStemmed())
             {
                 foreach (string s in cd.getTermDocID()[kvp.Key])
@@ -33,8 +34,19 @@ namespace InformationRetrieval
             }
             cd.setSortedTerm((from kv in cd.getTerm() orderby kv.Value select kv).ToList());
 
+            foreach (KeyValuePair<int, string> kvp in cd.getWordDictStemmed())
+            {
+                foreach (string s in cd.getTermDocID()[kvp.Key])
+                {
+                    if (!cd.getUniqueTerm().Contains(s))
+                        cd.getUniqueTerm().Add(s);
+                }
+            }*/
+
+            //cd.setSortedTerm((from kv in cd.getTerm() orderby kv.Value select kv).ToList());
+
             //for (int i = 1; i <= cd.getTermDocID().Count; i++)
-            foreach(KeyValuePair<int, string>kvp in cd.getWordDictStemmed())
+            foreach (KeyValuePair<int, string>kvp in cd.getWordDictStemmed())
             {
                 for (int j = 0; j < cd.getTermDocID()[kvp.Key].Length; j++)
                 {
@@ -49,12 +61,13 @@ namespace InformationRetrieval
             }
             cd.setStructuredDocIndex((from entry in cd.getWordDocNumber() orderby entry.Key ascending select entry).ToList());
             // Proses mengganti term dengan indeks term (Indexing)
+            /*
             index = 1;
             foreach (KeyValuePair<string, List<int>> kvp in cd.getStructuredDocIndex())
             {
                 cd.getIndeksTerm().Add(index, kvp.Value);
                 index++;
-            }
+            }*/
         }
         public void IndexingQuery(CollectionDocument cd)
         {
@@ -77,7 +90,7 @@ namespace InformationRetrieval
                     cd.getTermQuery().Add(cd.getTermQueryID()[i]., s);
                     index++;
                 }*/
-                 
+            /*     
             foreach (KeyValuePair<int, string[]> kvp in cd.getTermQueryID())
             {
                 for (int j = 0; j < cd.getTermQueryID()[kvp.Key].Length; j++)
@@ -87,10 +100,19 @@ namespace InformationRetrieval
                 }
             }
             
-            cd.setSortedTermQuery((from kv in cd.getTermQuery() orderby kv.Value select kv).ToList());
+            cd.setSortedTermQuery((from kv in cd.getTermQuery() orderby kv.Value select kv).ToList());*/
 
+            foreach (KeyValuePair<int, string[]> kvp in cd.getTermQueryID())
+            {
+                foreach (string s in kvp.Value)
+                {
+                    if (!cd.getUniqueQueryTerm().Contains(s))
+                        cd.getUniqueQueryTerm().Add(s);
+                }
+            }
+            
             //for (int i = 1; i <= cd.getTermQueryID().Count; i++)
-            foreach(KeyValuePair<int, string[]>kvp in cd.getTermQueryID())
+            foreach (KeyValuePair<int, string[]>kvp in cd.getTermQueryID())
             {
                 for (int j = 0; j < cd.getTermQueryID()[kvp.Key].Length; j++)
                 {
@@ -105,12 +127,13 @@ namespace InformationRetrieval
             cd.setStructuredQueryIndex((from entry in cd.getQueryDocNumber() orderby entry.Key ascending select entry).ToList());
 
             // Proses mengganti term dengan indeks term (Indexing)
+            /*
             index = 1;
             foreach (KeyValuePair<string, List<int>> kvp in cd.getStructuredQueryIndex())
             {
                 cd.getIndeksTermQuery().Add(index, kvp.Value);
                 index++;
-            }
+            }*/
         }
     }
 }

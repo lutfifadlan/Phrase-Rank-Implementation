@@ -103,7 +103,7 @@ namespace InformationRetrieval
                     {
                         int ind = cd.getCurrentKey();
                         string s = contentDoc[i].Substring(2);
-                        cd.setWord(ind, s/*s.ToLower()*/);
+                        cd.setWord(ind, /*s*/s.ToLower());
                         //nDoc++;
                     }
                     //nDoc++;
@@ -139,7 +139,7 @@ namespace InformationRetrieval
                     {
                         int ind = cd.getCurrentKey();
                         string s = contentQuery[i].Substring(2);
-                        cd.setWord(ind, s/*.ToLower()*/);
+                        cd.setWord(ind, /*s*/s.ToLower());
                         //nQuery++;
                     }
                     //nQuery++;

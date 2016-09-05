@@ -11,7 +11,7 @@ namespace InformationRetrieval
     {
         public void Evaluation(CollectionDocument cq, int noQuery)
         {
-            Console.WriteLine(noQuery);
+            //Console.WriteLine(noQuery);
             cq.getRecallDict().Clear();
             cq.getPrecisionDict().Clear();
             cq.getRecallPrecision().Clear();

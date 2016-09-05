@@ -84,8 +84,8 @@ namespace InformationRetrieval
             {
                 while (k < maxK)
                 {
-                    if (cq.getDictRankedDocFound()[noQuery].Count == k)//cq.getListNoQueryDocFound()[noQuery].Count == k)//cq.getRankedDocFound().Count == k)
-                        break;
+                    //if (cq.getDictRankedDocFound()[noQuery].Count == k)//cq.getListNoQueryDocFound()[noQuery].Count == k)//cq.getRankedDocFound().Count == k)
+                    //    break;
                     if (!pseudoRelDoc.Contains(cq.getDictRankedDocFound()[noQuery][k]))
                         pseudoRelDoc.Add(cq.getDictRankedDocFound()[noQuery][k]);//cq.getRankedDocFound()[k]);
                     k++;

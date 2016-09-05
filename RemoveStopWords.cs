@@ -70,6 +70,7 @@ namespace InformationRetrieval
             foreach (KeyValuePair<int, string> kvp in cd.getWordDictionary().Skip(1).ToList())
             {
                 string stoppedWord = removeStopWords(kvp.Value);
+                //Console.WriteLine("stopped word = {0}", stoppedWord);
                 //cd.getWordDictStopped().Add(index, stoppedWord);
                 cd.getWordDictStopped().Add(kvp.Key, stoppedWord);
                 //index++;
@@ -82,6 +83,7 @@ namespace InformationRetrieval
             {
                 string stoppedWord = removeStopWords(kvp.Value);
                 //cd.getQueryDictStopped().Add(index, stoppedWord);
+                //Console.WriteLine("stopped Word = {0}", stoppedWord);
                 cd.getQueryDictStopped().Add(kvp.Key, stoppedWord);
                 index++;
             }

@@ -47,6 +47,8 @@ namespace InformationRetrieval
         //private SortedDictionary<int, string[]> termQueryIDAfterRanked = new SortedDictionary<int, string[]>();
         private SortedDictionary<string, List<int>> wordDocNumber = new SortedDictionary<string, List<int>>(); // list term tiap dokumen beserta list dokumen yang memiliki term tersebut
         private SortedDictionary<string,List<int>> queryDocNumber = new SortedDictionary<string, List<int>>(); // list term tiap query beserta list query yang memiliki term tersebut
+        private List<string> uniqueTerm = new List<string>();
+        private List<string> uniqueQueryTerm = new List<string>();
         private List<KeyValuePair<int, string>> sortedTerm = new List<KeyValuePair<int, string>>(); //  list term pada dokumen yang telah diurut sesuai abjad
         private List<KeyValuePair<int, string>> sortedTermQuery = new List<KeyValuePair<int, string>>(); //  list term pada query yang telah diurut sesuai abjad
         private List<KeyValuePair<string, List<int>>> structuredDocIndex = new List<KeyValuePair<string, List<int>>>(); // list term tiap dokumen yang telah diurut berdasarkan abjad beserta list dokumen yang memiliki term tersebut 
@@ -138,6 +140,8 @@ namespace InformationRetrieval
         public SortedDictionary<int, string[]> getTermQueryReformulatedID() { return termQueryReformulatedID; }
         public SortedDictionary<string, List<int>> getWordDocNumber() { return wordDocNumber; }
         public SortedDictionary<string, List<int>> getQueryDocNumber() { return queryDocNumber; }
+        public List<string> getUniqueTerm() { return uniqueTerm; }
+        public List<string> getUniqueQueryTerm() { return uniqueQueryTerm; }
         public List<KeyValuePair<int, string>> getSortedTerm() { return sortedTerm; }
         public List<KeyValuePair<string, List<int>>> getStructuredDocIndex() { return structuredDocIndex; }
         public List<KeyValuePair<string, List<int>>> getStructuredQueryIndex() { return structuredQueryIndex; }

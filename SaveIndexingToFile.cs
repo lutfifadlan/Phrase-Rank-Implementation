@@ -23,6 +23,16 @@ namespace InformationRetrieval
                     foreach (int s in kvp.Value)
                         stw.WriteLine("[{0} {1}]", kvp.Key, s);
             }
+            /*
+            using (StreamWriter stw = new StreamWriter(@"C: \Users\Mochamad Lutfi F\Documents\Visual Studio 2015\Projects\ConsoleApplication11\output\Document\UniqueTermDocument.txt"))
+            {
+                int index = 1;
+                foreach (string s in cd.getUniqueTerm())
+                {
+                    stw.WriteLine("[{0} {1}]", index, s);
+                    index++;
+                }
+            }*/
         }
         public void SaveQueryIndexingToFile(CollectionDocument cd)
         {
@@ -37,6 +47,15 @@ namespace InformationRetrieval
                 foreach (KeyValuePair<string, List<int>> kvp in cd.getQueryDocNumber())
                     foreach (int s in kvp.Value)
                         stw.WriteLine("[{0} {1}]", kvp.Key, s);
+            }
+            using (StreamWriter stw = new StreamWriter(@"C: \Users\Mochamad Lutfi F\Documents\Visual Studio 2015\Projects\ConsoleApplication11\output\Query\UniqueTermQuery.txt"))
+            {
+                int index = 1;
+                foreach (string s in cd.getUniqueQueryTerm())
+                {
+                    stw.WriteLine("[{0} {1}]", index, s);
+                    index++;
+                }
             }
         }
     }
