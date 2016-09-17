@@ -17,9 +17,10 @@ namespace InformationRetrieval
             cq.getDocRelFound().Add(0);
             cq.setListPseudoRelDocWithoutQ(cq.getListPseudoRelDoc()[noQuery]);
             cq.getListPseudoRelDoc()[noQuery].Add(0);
+            /*
             cd.stemmedWordPositionDocument[0] = new Dictionary<string, List<int>>();
             cd.stemmedWordPositionDocument[0] = cq.stemmedWordPositionQuery[noQuery];
-            cd.getSizeWindowDocument()[0] = cq.getSizeWindowQuery()[noQuery];
+            cd.getSizeWindowDocument()[0] = cq.getSizeWindowQuery()[noQuery];*/
             // Compute term frequency query in new N
             cd.noDocTermTF[0] = new Dictionary<string, int>();
             Dictionary<string, int> termTF = new Dictionary<string, int>();

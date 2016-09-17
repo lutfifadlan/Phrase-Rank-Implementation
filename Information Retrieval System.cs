@@ -154,18 +154,52 @@ namespace InformationRetrieval
                 }
                 catch (IOException) { }
             }
+            relJudge.WriteRld(collQuery);
         }      
         private void btnStopWords_Click(object sender, EventArgs e)
         {
             removeStop.RemoveStopWordDocumentDictionary(collDoc);
             removeStop.RemoveStopWordQueryDictionary(collQuery);
+            Console.WriteLine("Stop words telah dihilangkan");
             MessageBox.Show("Stop words telah dihilangkan");
         }
         private void btnStemming_Click(object sender, EventArgs e)
         {
-            stemColl.StemmingDocument(collDoc);
-            stemColl.StemmingQuery(collQuery);
-            MessageBox.Show("Stemming berhasil dilakukan");
+            if (textBoxDocFile.Text == @"C:\Users\Mochamad Lutfi F\Documents\Visual Studio 2015\Projects\ConsoleApplication11\test collection\TEMPO\tempoStemmed.txt")
+            {
+                Console.WriteLine("Menyimpan Dokumen TEMPO yang sudah di-stem");
+                foreach (KeyValuePair<int, string> kvp in collDoc.getWordDictionary().Skip(1).ToList())
+                {
+                    Console.WriteLine(kvp.Key);
+                    //Console.WriteLine(kvp.Value);
+                    //char[] delimiters = new char[] { '\n' };
+                    //string[] valueWithoutEnter = kvp.Value.Split((char[])null, StringSplitOptions.RemoveEmptyEntries);//delimiters, StringSplitOptions.RemoveEmptyEntries); 
+                    string[] valueWithoutEnter = kvp.Value.Split(new string[] { "\r\n", "\n" }, StringSplitOptions.None);
+                    collDoc.getWordDictStemmed().Add(kvp.Key, valueWithoutEnter[1]);
+                    stemColl.WriteOutputStemmingDocument(collDoc);
+                }
+                //MessageBox.Show("Koleksi Dokumen TEMPO berhasil disimpan");
+                //MessageBox.Show("Dokumen TEMPO berhasil disimpan", "Header", MessageBoxButtons.OK, MessageBoxIcon.None, MessageBoxDefaultButton.Button1, (MessageBoxOptions)0x40000);  // MB_TOPMOST
+                Console.WriteLine("Menyimpan Query TEMPO yang sudah di-stem");
+                foreach (KeyValuePair<int, string> kvp in collQuery.getWordDictionary().Skip(1).ToList())
+                {
+                    //Console.WriteLine(kvp.Key);
+                    //char[] delimiters = new char[] { '\n' };
+                    //string[] valueWithoutEnter = kvp.Value.Split((char[])null, StringSplitOptions.RemoveEmptyEntries);//delimiters, StringSplitOptions.RemoveEmptyEntries);
+                    string[] valueWithoutEnter = kvp.Value.Split(new string[] { "\r\n", "\n" }, StringSplitOptions.None);
+                    collQuery.getQueryStemmed().Add(kvp.Key, valueWithoutEnter[1]);
+                    stemColl.WriteOutputStemmingQuery(collQuery);
+                }
+            }
+            else
+            {
+                stemColl.StemmingDocument(collDoc);
+                stemColl.WriteOutputStemmingDocument(collDoc);
+                stemColl.StemmingQuery(collQuery);
+                stemColl.WriteOutputStemmingQuery(collQuery);
+                Console.WriteLine("Stemming berhasil dilakukan");
+                MessageBox.Show("Stemming berhasil dilakukan");
+            }
         }
         private void btnIndexing_Click(object sender, EventArgs e)
         {
@@ -175,6 +209,7 @@ namespace InformationRetrieval
             indexer.IndexingQuery(collQuery);
             positioningTerm.CreatePositionQuery(collQuery);
             saveIndexing.SaveQueryIndexingToFile(collQuery);
+            Console.WriteLine("Indexing berhasil dilakukan");
             MessageBox.Show("Indexing berhasil dilakukan");
         }
         private void btnWeighting_Click(object sender, EventArgs e)
@@ -189,6 +224,7 @@ namespace InformationRetrieval
             computeTFIDFNormalized.NormalizeTFFIDFQueryperTerm(collQuery);
             computeTFIDFNormalized.WriteTFIDFperDocumentNormalized(collDoc);
             computeTFIDFNormalized.WriteTFIDFperQueryNormalized(collQuery);
+            Console.WriteLine("Pembobotan kata berhasil dilakukan");
             MessageBox.Show("Pembobotan kata berhasil dilakukan");
         }
         private void btnInvertedFile_Click(object sender, EventArgs e)
@@ -197,6 +233,7 @@ namespace InformationRetrieval
             invertedFile.MakeInvertedFileIndexQuery(collQuery);
             invertedFile.MakeInvertedFileIndexDocumentNormalized(collDoc);
             invertedFile.MakeInvertedFileIndexQueryNormalized(collQuery);
+            Console.WriteLine("Inverted File Index telah berhasil dibuat");
             MessageBox.Show("Inverted File Index telah berhasil dibuat");
         }
         private void btnRetrieval_Click(object sender, EventArgs e)
@@ -231,21 +268,26 @@ namespace InformationRetrieval
             //MessageBox.Show("Inverted File Index telah berhasil dibuat");
             // ----------------------------------------------------------
             */
+            File.WriteAllText(@"C: \Users\Mochamad Lutfi F\Documents\Visual Studio 2015\Projects\ConsoleApplication11\output\Query\Document relevant found.txt", string.Empty);
             collQuery.getListNoQueryDocFound().Clear();
             foreach (KeyValuePair<int, string[]> kvp in collQuery.getTermQueryID())
             {
                 Console.WriteLine("Retrieve Query {0}", kvp.Key);
                 retrieval.Retrieval(collDoc, collQuery, kvp.Key);
+                retrieval.WriteDocumentRetrievalResult(collQuery, kvp.Key);
             }
+            Console.WriteLine("Retrieval berhasil dilakukan");
             MessageBox.Show("Retrieval berhasil dilakukan");
         }
         private void btnEvaluation_Click(object sender, EventArgs e)
         {
+            File.WriteAllText(@"C: \Users\Mochamad Lutfi F\Documents\Visual Studio 2015\Projects\ConsoleApplication11\output\Query\Document Retrieved Score.txt", string.Empty);
             foreach (KeyValuePair<int, string[]> kvp in collQuery.getTermQueryID())
             {
                 Console.WriteLine("Evaluasi Query {0}", kvp.Key);
                 weightCollection.MakeWeightQueryToList(collQuery, kvp.Key);
                 scoring.ScoringAllDocumentRetrieved(collDoc, collQuery, kvp.Key);
+                scoring.WriteAllRetrievalResult(collQuery, kvp.Key);
                 evaluation.Evaluation(collQuery, kvp.Key);
                 allRecallRetrieval.Add(collQuery.getRecallRetrieval());
                 allPrecisionRetrieval.Add(collQuery.getPrecisionRetrieval());
@@ -277,13 +319,15 @@ namespace InformationRetrieval
             {
                 Console.WriteLine("Pseudo Relevance Feedback Query {0}", kvp.Key);
                 relFeedBack.PseudoRelevantDocument(collQuery, kvp.Key, k);
-                relFeedBack.WritePseudoRelevantDocument(collQuery, kvp.Key);
+                //relFeedBack.WritePseudoRelevantDocument(collQuery, kvp.Key);
                 if (!collQuery.getListPseudoRelDoc().ContainsKey(kvp.Key))
                     collQuery.getListPseudoRelDoc().Add(kvp.Key, new List<int>());
                 foreach (int j in collQuery.getListNoQueryDocRelFound()[kvp.Key])//collQuery.getDocRelFound())
                     collQuery.getListPseudoRelDoc()[kvp.Key].Add(j);
 
             }
+            relFeedBack.WritePseudoRelevantDocument(collQuery);
+            Console.WriteLine("Pseudo Relevance Feedback berhasil dilakukan");
             MessageBox.Show("Pseudo Relevance Feedback berhasil dilakukan");
             /*
             relFeedBack.PseudoRelevantDocument(collQuery,kvp.Key, k);
@@ -318,9 +362,8 @@ namespace InformationRetrieval
         }
         private void btnPhraseRank_Click(object sender, EventArgs e)
         {
-            
+            /*
             // RETRIEVAL
-            
             //Console.WriteLine("masuk");
             //MessageBox.Show("Dokumen TEMPO berhasil disimpan", "Header", MessageBoxButtons.OK, MessageBoxIcon.None, MessageBoxDefaultButton.Button1, (MessageBoxOptions)0x40000);  // MB_TOPMOST
             if (textBoxDocFile.Text == @"C:\Users\Mochamad Lutfi F\Documents\Visual Studio 2015\Projects\ConsoleApplication11\test collection\TEMPO\tempoStemmed.txt")
@@ -362,10 +405,10 @@ namespace InformationRetrieval
             Console.WriteLine("Stemming berhasil dilakukan");
             //MessageBox.Show("Stemming berhasil dilakukan");
             indexer.IndexingDocument(collDoc);
-            positioningTerm.CreatePositionDocument(collDoc);
+            //positioningTerm.CreatePositionDocument(collDoc);
             saveIndexing.SaveDocumentIndexingToFile(collDoc);
             indexer.IndexingQuery(collQuery);
-            positioningTerm.CreatePositionQuery(collQuery);
+            //positioningTerm.CreatePositionQuery(collQuery);
             saveIndexing.SaveQueryIndexingToFile(collQuery);
             Console.WriteLine("Indexing berhasil dilakukan");
             //MessageBox.Show("Indexing berhasil dilakukan");
@@ -484,6 +527,8 @@ namespace InformationRetrieval
             isAdj.isWordQueryAdjacent(collQuery);
             List<int> listNoQuery = new List<int>();
             phRank = new PhraseRank();
+            phRank.ComputeNUniqueStemmedWordinDoc(collDoc);
+            /*
             if ((radioButton3Term.Checked || (!radioButton3Term.Checked && !radioButton6Term.Checked)) && !radioButton6Term.Checked)
             {
                 Console.WriteLine("Count each word occurrence in query in windows with size 4");
@@ -507,9 +552,9 @@ namespace InformationRetrieval
                 phRank.CountStemCoOccurrenceW20(collDoc, collQuery);
                 Console.WriteLine("Count each word occurrence in query in windows with size 24");
                 phRank.CountStemCoOccurrenceW24(collDoc, collQuery);
-            }
+            }*/
             File.WriteAllText(@"C: \Users\Mochamad Lutfi F\Documents\Visual Studio 2015\Projects\ConsoleApplication11\output\Query\Unique Stemmed Word.txt", string.Empty);
-            File.WriteAllText(@"C: \Users\Mochamad Lutfi F\Documents\Visual Studio 2015\Projects\ConsoleApplication11\output\Query\Weight Node factor s.txt", string.Empty);
+            File.WriteAllText(@"C: \Users\Mochamad Lutfi F\Documents\Visual Studio 2015\Projects\ConsoleApplication11\output\Query\Weight factor s.txt", string.Empty);
             File.WriteAllText(@"C: \Users\Mochamad Lutfi F\Documents\Visual Studio 2015\Projects\ConsoleApplication11\output\Query\Weight Edge.txt", string.Empty);
             File.WriteAllText(@"C: \Users\Mochamad Lutfi F\Documents\Visual Studio 2015\Projects\ConsoleApplication11\output\Query\Matrix Probability.txt", string.Empty);
             File.WriteAllText(@"C: \Users\Mochamad Lutfi F\Documents\Visual Studio 2015\Projects\ConsoleApplication11\output\Query\Normalized Matrix Probability.txt", string.Empty);
@@ -518,7 +563,7 @@ namespace InformationRetrieval
             File.WriteAllText(@"C: \Users\Mochamad Lutfi F\Documents\Visual Studio 2015\Projects\ConsoleApplication11\output\Query\Ranked Affinity Query Score.txt", string.Empty);
             File.WriteAllText(@"C: \Users\Mochamad Lutfi F\Documents\Visual Studio 2015\Projects\ConsoleApplication11\output\Query\Ranked Candidate Term Score.txt", string.Empty);
             File.WriteAllText(@"C: \Users\Mochamad Lutfi F\Documents\Visual Studio 2015\Projects\ConsoleApplication11\output\Query\Reformulated Query.txt", string.Empty);
-            File.WriteAllText(@"C: \Users\Mochamad Lutfi F\Documents\Visual Studio 2015\Projects\ConsoleApplication11\output\Query\PHIJt.txt", string.Empty);
+            //File.WriteAllText(@"C: \Users\Mochamad Lutfi F\Documents\Visual Studio 2015\Projects\ConsoleApplication11\output\Query\PHIJt.txt", string.Empty);
             foreach (KeyValuePair<int, string[]> pair in collQuery.getTermQueryID())
             {
                 listNoQuery.Add(pair.Key);
@@ -528,22 +573,34 @@ namespace InformationRetrieval
                 if (btnS.Checked)
                 {
                     foreach (int i in listNoQuery)
+                    {
+                        phRank.CountStemCoOccurrenceW2inN(collDoc, collQuery, i);
                         phRank.PhRankAlgorithmSF(collDoc, collQuery, i);
+                    }
                 }
                 else if (btnR.Checked)
                 {
                     foreach (int i in listNoQuery)
+                    {
+                        phRank.CountStemCoOccurrenceW2inN(collDoc, collQuery, i);
                         phRank.PhRankAlgorithmRF(collDoc, collQuery, i);
+                    }
                 }
                 else if (btnZ.Checked)
                 {
                     foreach (int i in listNoQuery)
+                    {
+                        phRank.CountStemCoOccurrenceW2inN(collDoc, collQuery, i);
                         phRank.PhRankAlgorithmZF(collDoc, collQuery, i);
+                    }
                 }
                 else if (!btnS.Checked && !btnR.Checked && !btnZ.Checked)
                 {
                     foreach (int i in listNoQuery)
+                    {
+                        phRank.CountStemCoOccurrenceW2inN(collDoc, collQuery, i);
                         phRank.PhRankAlgoritmSRZT(collDoc, collQuery, i);
+                    }
                 }
                 else
                 {
@@ -557,22 +614,34 @@ namespace InformationRetrieval
                 if (btnS.Checked)
                 {
                     foreach (int i in listNoQuery)
+                    {
+                        phRank.CountStemCoOccurrenceW2inN(collDoc, collQuery, i);
                         phRank.PhRankAlgorithmSF6Term(collDoc, collQuery, i);
+                    }
                 }
                 else if (btnR.Checked)
                 {
                     foreach (int i in listNoQuery)
+                    {
+                        phRank.CountStemCoOccurrenceW2inN(collDoc, collQuery, i);
                         phRank.PhRankAlgorithmRF6Term(collDoc, collQuery, i);
+                    }
                 }
                 else if (btnZ.Checked)
                 {
                     foreach (int i in listNoQuery)
+                    {
+                        phRank.CountStemCoOccurrenceW2inN(collDoc, collQuery, i);
                         phRank.PhRankAlgorithmZF6Term(collDoc, collQuery, i);
+                    }
                 }
                 else if (!btnS.Checked && !btnR.Checked && !btnZ.Checked)
                 {
                     foreach (int i in listNoQuery)
+                    {
+                        phRank.CountStemCoOccurrenceW2inN(collDoc, collQuery, i);
                         phRank.PhRankAlgoritmSRZT6Term(collDoc, collQuery, i);
+                    }
                 }
                 else
                 {
@@ -583,13 +652,16 @@ namespace InformationRetrieval
             }
             else
                 MessageBox.Show("Hanya dapat memilih salah satu jumlah kandidat term");
-            //MessageBox.Show("Algoritma Phrase Rank berhasil dijalankan");
+            Console.WriteLine("Algoritma Phrase Rank berhasil dijalankan");
+            MessageBox.Show("Algoritma Phrase Rank berhasil dijalankan");
+            /*
             foreach (KeyValuePair<int, string[]> kvp in collQuery.getTermQueryReformulatedID())
             {
                 Console.WriteLine("Retrieve Query Phrase Rank {0}", kvp.Key);
                 retrieval.RetrievalPhRank(collDoc, collQuery, kvp.Key);
             }
-            Console.WriteLine();
+            Console.WriteLine("Retreive reformulated query phrase rank berhasil dilakukan");
+            MessageBox.Show("Retreive reformulated query phrase rank berhasil dilakukan");
             foreach (KeyValuePair<int, string[]> kvp in collQuery.getTermQueryReformulatedID())//collQuery.getTermQueryID())
             {
                 Console.WriteLine("Evaluasi Query Phrase Rank {0}", kvp.Key);
@@ -621,7 +693,7 @@ namespace InformationRetrieval
             allRecallRetrieval = new List<double>();
             allPrecisionRetrieval = new List<double>();
             allInterpolatedAveragePrecision = new List<double>();
-            allNonInterpolatedAveragePrecision = new List<double>();   
+            allNonInterpolatedAveragePrecision = new List<double>();  */
         }
         private void btnRetTermPhRank_Click(object sender, EventArgs e)
         {
@@ -630,7 +702,8 @@ namespace InformationRetrieval
                 Console.WriteLine("Retrieval Reformulated Query {0}", kvp.Key);
                 retrieval.RetrievalPhRank(collDoc, collQuery, kvp.Key);
             }
-            MessageBox.Show("Retrieval term PhRank berhasil dilakukan");
+            Console.WriteLine("Retreive reformulated query phrase rank berhasil dilakukan");
+            MessageBox.Show("Retreive reformulated query phrase rank berhasil dilakukan");
         }
         private void btnEvalTermPhRank_Click(object sender, EventArgs e)
         {
@@ -950,7 +1023,7 @@ namespace InformationRetrieval
                     }
                     else if (Convert.ToInt32(textBoxK.Text) == 2)
                     {
-                        if (radioButton3Term.Checked)
+                        if (!radioButton6Term.Checked)
                         {
                             using (StreamWriter stw = new StreamWriter(@"C: \Users\Mochamad Lutfi F\Documents\Visual Studio 2015\Projects\ConsoleApplication11\output\Evaluation Result\ADI\k = 2\3 term\PhRankSF Evaluation.txt"))
                                 WriteWithStreamWriter(stw, rm, rc, pr, iap, niap);
@@ -1048,7 +1121,7 @@ namespace InformationRetrieval
                     }
                     else if (Convert.ToInt32(textBoxK.Text) == 2)
                     {
-                        if (radioButton3Term.Checked)
+                        if (!radioButton6Term.Checked)
                         {
                             using (StreamWriter stw = new StreamWriter(@"C: \Users\Mochamad Lutfi F\Documents\Visual Studio 2015\Projects\ConsoleApplication11\output\Evaluation Result\CISI\k = 2\3 term\PhRankSF Evaluation.txt"))
                                 WriteWithStreamWriter(stw, rm, rc, pr, iap, niap);
@@ -1113,7 +1186,7 @@ namespace InformationRetrieval
                     }
                     else if (Convert.ToInt32(textBoxK.Text) == 2)
                     {
-                        if (radioButton3Term.Checked)
+                        if (!radioButton6Term.Checked)
                         {
                             using (StreamWriter stw = new StreamWriter(@"C: \Users\Mochamad Lutfi F\Documents\Visual Studio 2015\Projects\ConsoleApplication11\output\Evaluation Result\CRAN\k = 2\3 term\PhRankSF Evaluation.txt"))
                                 WriteWithStreamWriter(stw, rm, rc, pr, iap, niap);
@@ -1244,7 +1317,7 @@ namespace InformationRetrieval
                     }
                     else if (Convert.ToInt32(textBoxK.Text) == 2)
                     {
-                        if (radioButton3Term.Checked)
+                        if (!radioButton6Term.Checked)
                         {
                             using (StreamWriter stw = new StreamWriter(@"C: \Users\Mochamad Lutfi F\Documents\Visual Studio 2015\Projects\ConsoleApplication11\output\Evaluation Result\TEMPO\k = 2\3 term\PhRankSF Evaluation.txt"))
                                 WriteWithStreamWriter(stw, rm, rc, pr, iap, niap);
@@ -1312,7 +1385,7 @@ namespace InformationRetrieval
                     }
                     else if (Convert.ToInt32(textBoxK.Text) == 2)
                     {
-                        if (radioButton3Term.Checked)
+                        if (!radioButton6Term.Checked)
                         {
                             using (StreamWriter stw = new StreamWriter(@"C: \Users\Mochamad Lutfi F\Documents\Visual Studio 2015\Projects\ConsoleApplication11\output\Evaluation Result\ADI\k = 2\3 term\PhRankRF Evaluation.txt"))
                                 WriteWithStreamWriter(stw, rm, rc, pr, iap, niap);
@@ -1410,7 +1483,7 @@ namespace InformationRetrieval
                     }
                     else if (Convert.ToInt32(textBoxK.Text) == 2)
                     {
-                        if (radioButton3Term.Checked)
+                        if (!radioButton6Term.Checked)
                         {
                             using (StreamWriter stw = new StreamWriter(@"C: \Users\Mochamad Lutfi F\Documents\Visual Studio 2015\Projects\ConsoleApplication11\output\Evaluation Result\CISI\k = 2\3 term\PhRankRF Evaluation.txt"))
                                 WriteWithStreamWriter(stw, rm, rc, pr, iap, niap);
@@ -1475,7 +1548,7 @@ namespace InformationRetrieval
                     }
                     else if (Convert.ToInt32(textBoxK.Text) == 2)
                     {
-                        if (radioButton3Term.Checked)
+                        if (!radioButton6Term.Checked)
                         {
                             using (StreamWriter stw = new StreamWriter(@"C: \Users\Mochamad Lutfi F\Documents\Visual Studio 2015\Projects\ConsoleApplication11\output\Evaluation Result\CRAN\k = 2\3 term\PhRankRF Evaluation.txt"))
                                 WriteWithStreamWriter(stw, rm, rc, pr, iap, niap);
@@ -1606,7 +1679,7 @@ namespace InformationRetrieval
                     }
                     else if (Convert.ToInt32(textBoxK.Text) == 2)
                     {
-                        if (radioButton3Term.Checked)
+                        if (!radioButton6Term.Checked)
                         {
                             using (StreamWriter stw = new StreamWriter(@"C: \Users\Mochamad Lutfi F\Documents\Visual Studio 2015\Projects\ConsoleApplication11\output\Evaluation Result\TEMPO\k = 2\3 term\PhRankRF Evaluation.txt"))
                                 WriteWithStreamWriter(stw, rm, rc, pr, iap, niap);
@@ -1674,7 +1747,7 @@ namespace InformationRetrieval
                     }
                     else if (Convert.ToInt32(textBoxK.Text) == 2)
                     {
-                        if (radioButton3Term.Checked)
+                        if (!radioButton6Term.Checked)
                         {
                             using (StreamWriter stw = new StreamWriter(@"C: \Users\Mochamad Lutfi F\Documents\Visual Studio 2015\Projects\ConsoleApplication11\output\Evaluation Result\ADI\k = 2\3 term\PhRankZF Evaluation.txt"))
                                 WriteWithStreamWriter(stw, rm, rc, pr, iap, niap);
@@ -1772,7 +1845,7 @@ namespace InformationRetrieval
                     }
                     else if (Convert.ToInt32(textBoxK.Text) == 2)
                     {
-                        if (radioButton3Term.Checked)
+                        if (!radioButton6Term.Checked)
                         {
                             using (StreamWriter stw = new StreamWriter(@"C: \Users\Mochamad Lutfi F\Documents\Visual Studio 2015\Projects\ConsoleApplication11\output\Evaluation Result\CISI\k = 2\3 term\PhRankZF Evaluation.txt"))
                                 WriteWithStreamWriter(stw, rm, rc, pr, iap, niap);
@@ -1837,7 +1910,7 @@ namespace InformationRetrieval
                     }
                     else if (Convert.ToInt32(textBoxK.Text) == 2)
                     {
-                        if (radioButton3Term.Checked)
+                        if (!radioButton6Term.Checked)
                         {
                             using (StreamWriter stw = new StreamWriter(@"C: \Users\Mochamad Lutfi F\Documents\Visual Studio 2015\Projects\ConsoleApplication11\output\Evaluation Result\CRAN\k = 2\3 term\PhRankZF Evaluation.txt"))
                                 WriteWithStreamWriter(stw, rm, rc, pr, iap, niap);
@@ -1968,7 +2041,7 @@ namespace InformationRetrieval
                     }
                     else if (Convert.ToInt32(textBoxK.Text) == 2)
                     {
-                        if (radioButton3Term.Checked)
+                        if (!radioButton6Term.Checked)
                         {
                             using (StreamWriter stw = new StreamWriter(@"C: \Users\Mochamad Lutfi F\Documents\Visual Studio 2015\Projects\ConsoleApplication11\output\Evaluation Result\TEMPO\k = 2\3 term\PhRankZF Evaluation.txt"))
                                 WriteWithStreamWriter(stw, rm, rc, pr, iap, niap);
@@ -2036,7 +2109,7 @@ namespace InformationRetrieval
                     }
                     else if (Convert.ToInt32(textBoxK.Text) == 2)
                     {
-                        if (radioButton3Term.Checked)
+                        if (!radioButton6Term.Checked)
                         {
                             using (StreamWriter stw = new StreamWriter(@"C: \Users\Mochamad Lutfi F\Documents\Visual Studio 2015\Projects\ConsoleApplication11\output\Evaluation Result\ADI\k = 2\3 term\PhRankSRZT Evaluation.txt"))
                                 WriteWithStreamWriter(stw, rm, rc, pr, iap, niap);
@@ -2134,7 +2207,7 @@ namespace InformationRetrieval
                     }
                     else if (Convert.ToInt32(textBoxK.Text) == 2)
                     {
-                        if (radioButton3Term.Checked)
+                        if (!radioButton6Term.Checked)
                         {
                             using (StreamWriter stw = new StreamWriter(@"C: \Users\Mochamad Lutfi F\Documents\Visual Studio 2015\Projects\ConsoleApplication11\output\Evaluation Result\CISI\k = 2\3 term\PhRankSRZT Evaluation.txt"))
                                 WriteWithStreamWriter(stw, rm, rc, pr, iap, niap);
@@ -2199,7 +2272,7 @@ namespace InformationRetrieval
                     }
                     else if (Convert.ToInt32(textBoxK.Text) == 2)
                     {
-                        if (radioButton3Term.Checked)
+                        if (!radioButton6Term.Checked)
                         {
                             using (StreamWriter stw = new StreamWriter(@"C: \Users\Mochamad Lutfi F\Documents\Visual Studio 2015\Projects\ConsoleApplication11\output\Evaluation Result\CRAN\k = 2\3 term\PhRankSRZT Evaluation.txt"))
                                 WriteWithStreamWriter(stw, rm, rc, pr, iap, niap);
@@ -2330,7 +2403,7 @@ namespace InformationRetrieval
                     }
                     else if (Convert.ToInt32(textBoxK.Text) == 2)
                     {
-                        if (radioButton3Term.Checked)
+                        if (!radioButton6Term.Checked)
                         {
                             using (StreamWriter stw = new StreamWriter(@"C: \Users\Mochamad Lutfi F\Documents\Visual Studio 2015\Projects\ConsoleApplication11\output\Evaluation Result\TEMPO\k = 2\3 term\PhRankSRZT Evaluation.txt"))
                                 WriteWithStreamWriter(stw, rm, rc, pr, iap, niap);

@@ -42,8 +42,6 @@
             this.btnInvertedFile = new System.Windows.Forms.Button();
             this.btnRetrieval = new System.Windows.Forms.Button();
             this.btnPseudoRelFB = new System.Windows.Forms.Button();
-            this.lblK = new System.Windows.Forms.Label();
-            this.textBoxK = new System.Windows.Forms.TextBox();
             this.btnEvaluation = new System.Windows.Forms.Button();
             this.btnPhraseRank = new System.Windows.Forms.Button();
             this.btnS = new System.Windows.Forms.RadioButton();
@@ -54,6 +52,8 @@
             this.btnEvalTermPhRank = new System.Windows.Forms.Button();
             this.radioButton3Term = new System.Windows.Forms.RadioButton();
             this.radioButton6Term = new System.Windows.Forms.RadioButton();
+            this.lblK = new System.Windows.Forms.Label();
+            this.textBoxK = new System.Windows.Forms.TextBox();
             this.gBoxFeature.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -185,22 +185,6 @@
             this.btnPseudoRelFB.UseVisualStyleBackColor = true;
             this.btnPseudoRelFB.Click += new System.EventHandler(this.btnPseudoRelFB_Click);
             // 
-            // lblK
-            // 
-            this.lblK.AutoSize = true;
-            this.lblK.Location = new System.Drawing.Point(213, 317);
-            this.lblK.Name = "lblK";
-            this.lblK.Size = new System.Drawing.Size(25, 13);
-            this.lblK.TabIndex = 15;
-            this.lblK.Text = "k = ";
-            // 
-            // textBoxK
-            // 
-            this.textBoxK.Location = new System.Drawing.Point(234, 314);
-            this.textBoxK.Name = "textBoxK";
-            this.textBoxK.Size = new System.Drawing.Size(27, 20);
-            this.textBoxK.TabIndex = 16;
-            // 
             // btnEvaluation
             // 
             this.btnEvaluation.Location = new System.Drawing.Point(12, 279);
@@ -308,6 +292,22 @@
             this.radioButton6Term.Text = "6 Term";
             this.radioButton6Term.UseVisualStyleBackColor = true;
             // 
+            // lblK
+            // 
+            this.lblK.AutoSize = true;
+            this.lblK.Location = new System.Drawing.Point(213, 317);
+            this.lblK.Name = "lblK";
+            this.lblK.Size = new System.Drawing.Size(25, 13);
+            this.lblK.TabIndex = 15;
+            this.lblK.Text = "k = ";
+            // 
+            // textBoxK
+            // 
+            this.textBoxK.Location = new System.Drawing.Point(234, 314);
+            this.textBoxK.Name = "textBoxK";
+            this.textBoxK.Size = new System.Drawing.Size(27, 20);
+            this.textBoxK.TabIndex = 16;
+            // 
             // InformationRetrievalSystem
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -360,8 +360,6 @@
         private System.Windows.Forms.Button btnInvertedFile;
         private System.Windows.Forms.Button btnRetrieval;
         private System.Windows.Forms.Button btnPseudoRelFB;
-        private System.Windows.Forms.Label lblK;
-        private System.Windows.Forms.TextBox textBoxK;
         private System.Windows.Forms.Button btnEvaluation;
         private System.Windows.Forms.Button btnPhraseRank;
         private System.Windows.Forms.RadioButton btnS;
@@ -372,5 +370,7 @@
         private System.Windows.Forms.Button btnEvalTermPhRank;
         private System.Windows.Forms.RadioButton radioButton3Term;
         private System.Windows.Forms.RadioButton radioButton6Term;
+        private System.Windows.Forms.Label lblK;
+        private System.Windows.Forms.TextBox textBoxK;
     }
 }

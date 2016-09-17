@@ -186,7 +186,7 @@ namespace InformationRetrieval
         }
         public void WriteAllRetrievalResult(CollectionDocument cq, int noQuery)
         {
-            using (StreamWriter sw = File.AppendText(@"C: \Users\Mochamad Lutfi F\Documents\Visual Studio 2015\Projects\ConsoleApplication11\output\Query\All Retrieval Result.txt"))
+            using (StreamWriter sw = File.AppendText(@"C: \Users\Mochamad Lutfi F\Documents\Visual Studio 2015\Projects\ConsoleApplication11\output\Query\Document Retrieved Score.txt"))
             {
                 sw.WriteLine("Nomor Query = {0}", noQuery);
                 foreach (KeyValuePair<int, double> kvp in cq.getRankedDocumentScore())

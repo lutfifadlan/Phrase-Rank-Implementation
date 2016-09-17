@@ -43,6 +43,7 @@ namespace InformationRetrieval
                                 {
                                     if (kvp.Value[i] == cq.getRld()[noQuery].ElementAt(j))
                                     {
+                                        //Console.WriteLine(kvp.Value[i]);
                                         if (!cq.getDocRelFound().Contains(kvp.Value[i]))
                                             cq.getDocRelFound().Add(kvp.Value[i]);
                                     }
@@ -76,7 +77,7 @@ namespace InformationRetrieval
         }
         public void WriteDocumentRetrievalResult(CollectionDocument cq, int noQuery)
         {
-            using (StreamWriter sw = File.AppendText(@"C: \Users\Mochamad Lutfi F\Documents\Visual Studio 2015\Projects\ConsoleApplication11\output\Query\Document Retrieval Result.txt"))
+            using (StreamWriter sw = File.AppendText(@"C: \Users\Mochamad Lutfi F\Documents\Visual Studio 2015\Projects\ConsoleApplication11\output\Query\Document relevant found.txt"))
             {
                 sw.WriteLine("Nomor Query = {0}", noQuery);
                 sw.WriteLine("Dokumen relevan yang ditemukan:");

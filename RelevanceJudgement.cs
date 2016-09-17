@@ -90,15 +90,18 @@ namespace InformationRetrieval
                 ir = ir + 2;
             }*/
         }
-        public void PrintRld(CollectionDocument cd)
+        public void WriteRld(CollectionDocument cq)
         {
-            foreach(KeyValuePair<int, List<int>>kvp in cd.getRld())
+            using (StreamWriter sw = new StreamWriter(@"C:\Users\Mochamad Lutfi F\Documents\Visual Studio 2015\Projects\ConsoleApplication11\output\Query\relevenceJudgement.txt"))
             {
-                Console.WriteLine("Query = {0}", kvp.Key);
-                Console.WriteLine("Dokumen Relevan:");
-                foreach (int i in kvp.Value)
-                    Console.Write("{0} ", i);
-                Console.WriteLine();
+                foreach (KeyValuePair<int, List<int>> kvp in cq.getRld())
+                {
+                    sw.WriteLine("Query = {0}", kvp.Key);
+                    sw.WriteLine("Dokumen Relevan:");
+                    foreach (int i in kvp.Value)
+                        sw.Write("{0} ", i);
+                    sw.WriteLine();
+                }
             }
         }
     }

@@ -98,9 +98,9 @@ namespace InformationRetrieval
                     cq.getListNoQueryDocRelFound()[noQuery].Add(i);
             }
         }
-        public void WritePseudoRelevantDocument(CollectionDocument cq, int noQuery)
+        public void WritePseudoRelevantDocument(CollectionDocument cq)
         {
-            using (StreamWriter sw = File.AppendText(@"C: \Users\Mochamad Lutfi F\Documents\Visual Studio 2015\Projects\ConsoleApplication11\output\Query\Pseudo Relevant Document.txt"))
+            using (StreamWriter sw = new StreamWriter(@"C: \Users\Mochamad Lutfi F\Documents\Visual Studio 2015\Projects\ConsoleApplication11\output\Query\Pseudo Relevant Document.txt"))
             {
                 foreach (KeyValuePair<int, List<int>> kvp in cq.getListNoQueryDocRelFound())
                 {

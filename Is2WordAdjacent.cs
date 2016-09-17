@@ -8,6 +8,7 @@ namespace InformationRetrieval
 {
     class Is2WordAdjacent
     {
+        /*
         public void isWordAdjacent(CollectionDocument cd, CollectionDocument cq)
         {
             string s1, s2;
@@ -42,7 +43,7 @@ namespace InformationRetrieval
                 }
                 
             }
-        }
+        }*/
         public void isWordDocumentAdjacent(CollectionDocument cd)
         {
             string s1, s2;
@@ -66,6 +67,7 @@ namespace InformationRetrieval
                 cd.getAdjacentDocument().Add(vp.Key, listAdj);//j, listAdj);
             }
         }
+
         public void isWordQueryAdjacent(CollectionDocument cq)
         {
             string s1, s2;
